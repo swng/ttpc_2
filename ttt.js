@@ -1,54 +1,54 @@
 /*========================================================================================
- ���� ttt.js ����
+ □■ ttt.js ■□
 ========================================================================================*/
 /*----------------------------------------------------------------------------------------
- ���� �O���[�o���ϐ��ꗗ ����
+ ☆★ List of global variables ★☆
 ----------------------------------------------------------------------------------------*/
-var gButton;          // �����ꂽ�{�^���̖��O�B�t���[���I�����ɏ�����(�󕶎�����)�����
-var gLyrSections;     // �Z�N�V�����I�����C���[( LaYeR )
-var gLyrPerform;      // �Q�[�����C���[
-var gLyrPreferences;  // �ݒ背�C���[
-var gScene;           // �V�[����
-var gPrevScene;       // �O�̃t���[���ł̃V�[����( PREVious SCENE )
+var gButton;          // The name of the pressed button. Initialized at the end of the frame (empty character string fee)
+var gLyrSections;     // Section selection layer (Layer)
+var gLyrPerform;      // Game layer
+var gLyrPreferences;  // Setting layer
+var gScene;           // Scene name
+var gPrevScene;       // Scene name in the previous frame (PREVious SCENE)
 /*
-�� �V�[���\��
- select_sections �� preferences
-   ����
+● Scene structure
+ select_sections ⇔ preferences
+   ↓↑
  perform
 */
-var gKeys;            // �L�[�̖��O
+var gKeys;            // Names of the keys
 var gSelectForms = ['key_left', 'key_right', 'key_softdrop', 'key_harddrop',
-                    'key_rot_right', 'key_rot_left' , 'key_hold' , 'key_guide', 'key_rot_180'];  // �L�[�I���{�b�N�X�̖��O
+                    'key_rot_right', 'key_rot_left' , 'key_hold' , 'key_guide', 'key_rot_180'];  // Names of the key selection box
 /*
- �L�[��ǉ�����ۂɂ� LoadData() ����� SavePreferences() �ւ̒ǉ��A�܂� Key**() (�L�[����
- �擾���\�b�h)����ѐݒ�Z���N�g�{�b�N�X�̒ǉ���Y��Ȃ��ł��������B
+ To add a key, add it to LoadData() and SavePreferences(), and also use Key**() (the key name)
+ Don't forget to add the getter method and the set select box.
 */
 
-var gCurSectionId;    // �I��( CURrent )�̃Z�N�V���� ID
-var gCurProblemId;    // �I�𒆂̖�� ID
-var gCurProblem;      // �I�𒆂̖��I�u�W�F�N�g
-var gCurProblemReq;   // ���m���}
-var gQueue;           // �l�N�X�g��
+var gCurSectionId;    // Current section ID
+var gCurProblemId;    // Selected problem ID
+var gCurProblem;      // The selected problem object
+var gCurProblemReq;   // Problem quota
+var gQueue;           // Next queue
 var gCurMino;
 var gCurHold;
-var gCurUseGuideFlg   // �K�C�h�𗘗p���邩�ǂ���
+var gCurUseGuideFlg   // Whether to use the guide
 var gCurX;
 var gCurY;
 var gCurDir;
 var gNdCount;         // ( Natural Drop COUNT )
 var gDfCount;         // ( Display Features COUNT )
-var gCurGuide;        // ���݂̃K�C�h
-var gGuidesQueue;     // �K�C�h�z��
+var gCurGuide;        // Current guide
+var gGuidesQueue;     // Guides array
 
-var gLineClearCount;  // ���C���������o�̃J�E���g
-var gTSpinType;       // 0= T �X�s���Ȃ�, 1= T �X�s���E�~�j, 2=T �X�s��
-var gRens;            // �p������ REN ��
-var gIsReadyToB2b;    // ���� BACK to BACK �ɂȂ肤��?
+var gLineClearCount;  // Line clearing count
+var gTSpinType;       // 0= No T spin, 1= T spin mini, 2= T spin
+var gRens;            // ongoing REN count
+var gIsReadyToB2b;    // Could the next one be BACK to BACK?
 
 /*----------------------------------------------------------------------------------------
- ���� �e���ւ̃A�N�Z�X�ݒ� ����
+ ☆★ Access settings for each question ★☆
 
- ���f�[�^�� problem.js ���ɋL�ڂ���Ă��܂��B
+ The problem data is described in problem.js etc.
 ----------------------------------------------------------------------------------------*/
 var gProblems = getProblems();
 var gCurProgmeIdList = [];
@@ -58,9 +58,9 @@ for(var i = 0; i < SECTION_NUM; i++){
 }
 
 /*----------------------------------------------------------------------------------------
- ���� ������ ����
+ ☆★ Initialization★☆
 
- �N������ 1 �x�����Ăяo����܂��B�o�߃t���[������ 0 �Ƃ��Ĉ����܂��B
+ This is called once at startup. The number of elapsed frames is treated as 0.
 ----------------------------------------------------------------------------------------*/
 function Setup(){
   SetupLayers();
@@ -70,9 +70,9 @@ function Setup(){
   LoadData();
 }
 /*----------------------------------------------------------------------------------------
- ���� ���C���[������ ����
+ ☆★Layer Initialization★☆
 
- ���C���[�̃T�C�Y���� css �t�@�C���ŁA���e�� HTML ��Œ�`���Ă��܂��B
+ The layer size etc. are defined in the CSS file, and the content is defined in the HTML.
 ----------------------------------------------------------------------------------------*/
 function SetupLayers(){
   gLyrSections = new Layer('list_sections');
@@ -80,12 +80,12 @@ function SetupLayers(){
   gLyrPreferences = new Layer('preferences');
 }
 /*----------------------------------------------------------------------------------------
- ���� �Ǎ� ����
+ ☆★ Loading ★☆
 
- �N�b�L�[����ݒ�Ɛi����ǂݍ��݂܂��B
+ Reads settings and progress from cookies.
 ----------------------------------------------------------------------------------------*/
 function LoadData(){
-  // �L�[�ݒ�̓Ǎ�
+  // Read the key settings
   gKeys = [];
   gKeys.push(Load('MoveLeft', DEFAULT_KEY_MOVE_LEFT));
   gKeys.push(Load('MoveRight', DEFAULT_KEY_MOVE_RIGHT));
@@ -96,29 +96,29 @@ function LoadData(){
   gKeys.push(Load('Hold', DEFAULT_KEY_HOLD));
     gKeys.push(Load('Guide', DEFAULT_KEY_GUIDE));
     gKeys.push(Load('Rotate180', DEFAULT_KEY_180));
-  // �i���̓Ǎ�
+  // Load the progress
   for(var i = 0; i < SECTION_NUM; i++){
     gProblemsCleared[i] = (Load('Prg' + i, '0') == '1');
   }
 }
 /*----------------------------------------------------------------------------------------
- ���� �t���[�������� ����
+ ☆★ In-frame processing ★☆
 
- 1 �t���[���� 1 ��Ăяo����鏈���ł��B�t���[���Ǘ��� jsmod.js �ōs���Ă��܂��B
+ This process is called once per frame. Frame management is done by jsmod.js.
 ----------------------------------------------------------------------------------------*/
 function Main(){
-  // �V�[�����ς���Ă���ΐ؂�ւ�
+  // Switch if the scene has changed
   if(gPrevScene != gScene){
     TerminateScene(gPrevScene);
     SetupScene(gScene);
-    //�u�O�̃V�[���v�̍X�V
+    // Update the "previous scene"
     gPrevScene = gScene;
   }
   PerformScene(gScene);
   gButton = '';
 }
 /*----------------------------------------------------------------------------------------
- ���� �V�[���J�n ����
+ ☆★ Scene start ★☆
 ----------------------------------------------------------------------------------------*/
 function SetupScene(scene){
   switch(scene){
@@ -133,7 +133,7 @@ function SetupScene(scene){
     PrepareProblem();
     Refresh();
     gLyrPerform.Show();
-    window.scroll(0, 0);    // ��ԏ�փX�N���[��
+    window.scroll(0, 0);    // scroll to the top
     break;
   case 'perform_falling':
     break;
@@ -155,12 +155,12 @@ function SetupScene(scene){
     Say('perform_caption', 'Using Guide');
     break;
   case 'preferences':
-    // �L�[�ݒ�̕\�����f
+    // Display of key settings
     for(var i = 0; i < gKeys.length; i++){
       document.getElementById(gSelectForms[i]).value = gKeys[i];
     }
     gLyrPreferences.Show();
-    window.scroll(0, 0);    // ��ԏ�փX�N���[��
+    window.scroll(0, 0);    // scroll to the top
     break;
   default:
     gScene = 'select_section';
@@ -168,7 +168,7 @@ function SetupScene(scene){
   }
 }
 /*----------------------------------------------------------------------------------------
- ���� �V�[���I�� ����
+ ☆★ Scene End ★☆
 ----------------------------------------------------------------------------------------*/
 function TerminateScene(scene){
   switch(scene){
@@ -196,7 +196,7 @@ function TerminateScene(scene){
   }
 }
 /*----------------------------------------------------------------------------------------
- ���� �V�[������ ����
+ ☆★ Scene processing ★☆
 ----------------------------------------------------------------------------------------*/
 function PerformScene(scene){
   switch(scene){
@@ -227,23 +227,23 @@ function PerformScene(scene){
   }
 }
 /*----------------------------------------------------------------------------------------
- ���� ��菀�� ����
+ ☆★ Problem Preparation ★☆
 ----------------------------------------------------------------------------------------*/
 function PrepareProblem(){
 
   var curProblemId = gCurProgmeIdList[gCurProblemId];
   gCurProblem = gProblems[curProblemId];
 
-  // �m���}�z����f�B�[�v�R�s�[
+  // Deep copy the norm array
   gCurProblemReq = [];
   for(var i = 0; i < gCurProblem.req.length; i++){
     gCurProblemReq.push(gCurProblem.req[i]);
   }
 
-  // ���\��
+  // Intelligence representation
   DisplayCaption();
   RefreshHint();
-  // �}�g���b�N�X����
+  // Prepare the matrix
   for(var i = 0; i < DEADLINE_HEIGHT; i++){
     for(var j = 0; j < MATRIX_WIDTH; j++){
       gMatrix[i][j] = 0;
@@ -254,7 +254,7 @@ function PrepareProblem(){
       gMatrix[i][j] = gCurProblem.initialBlocks[i - DEADLINE_HEIGHT][j];
     }
   }
-  // �l�N�X�g����
+  // Prepare for next
   gQueue = [];
   gGuidesQueue = [];
   gCurHold = gCurProblem.ingredients[0][0];
@@ -264,14 +264,14 @@ function PrepareProblem(){
   for(var i = 0; i < gCurProblem.guides.length; i++){
     gGuidesQueue.push(gCurProblem.guides[i]);
   }
-  // �e��t���O������
+  // Initialize various flags
   gLineClearCount = -1;
   gTSpinType = 0;
   gRens = -1;
   gIsReadyToB2b = false;
 }
 /*----------------------------------------------------------------------------------------
- ���� ���^�C�g���\�� ����
+ ☆★ Show question title ★☆
 ----------------------------------------------------------------------------------------*/
 function DisplayCaption(){
   var curProblemId = gCurProgmeIdList[gCurProblemId];
@@ -281,9 +281,9 @@ function DisplayCaption(){
   Say("perform_caption", caption);
 }
 /*----------------------------------------------------------------------------------------
- ���� �l�N�X�g�𑗂� ����
+ ☆★ Send Next ★☆
 
- �l�N�X�g�����݂�������Ԃ��܂��B
+ Returns whether next exists.
 ----------------------------------------------------------------------------------------*/
 function Dequeue(){
   if(gQueue.length == 0 && !gCurHold) return false;
@@ -304,7 +304,7 @@ function Dequeue(){
   return true;
 }
 /*----------------------------------------------------------------------------------------
- ���� �q���g�\���𔽉f ����
+ ☆★ Refresh hint display ★☆
 ----------------------------------------------------------------------------------------*/
 function RefreshHint(){
   var hint = gCurProblem.hint;
@@ -314,13 +314,13 @@ function RefreshHint(){
   Say('perform_hint', hint);
 }
 /*----------------------------------------------------------------------------------------
- ���� �Z�N�V�������̋L�� ����
+ ☆★ Section name description ★☆
 ----------------------------------------------------------------------------------------*/
 function RefreshSectionTitle(){
   Say('section_title', SectionTitle(gCurSectionId));
 }
 /*----------------------------------------------------------------------------------------
- ���� �N���A�󋵂��{�^���ɔ��f ����
+ ☆★ Clear status is refreshed on the button ★☆
 ----------------------------------------------------------------------------------------*/
 function RefreshProblemButtons(){
   for(var i = 0; i < SECTION_NUM; i++){
@@ -329,7 +329,7 @@ function RefreshProblemButtons(){
   }
 }
 /*----------------------------------------------------------------------------------------
- ���� �V�[��: �Z�N�V�����I�� ����
+ ☆★Scene: Section selection ★☆
 ----------------------------------------------------------------------------------------*/
 function SceneSelectSection(){
   switch(gButton){
@@ -342,81 +342,81 @@ function SceneSelectSection(){
     gCurProblemId = 0;
 
     switch(gButton){
-    case 'section1':  /* �e���v����g��ł݂悤 */
+    case 'section1':  /* Let's create a template */
       gCurProgmeIdList = getProblemIdList(WARMING_UP);
       break;
-    case 'section2':  /* I �c�u�� �i�K�C�h����j*/
+    case 'section2':  /* I Vertical (with guide) */
       gCurProgmeIdList = getProblemIdList(GUIDANCE_VERTICAL);
       break;
-    case 'section3':  /* I �c�u�� �����_�� 30�� */
+    case 'section3':  /* I Vertical Random 30 questions */
       gCurProgmeIdList = (shuffle(getProblemIdList(PROB840_VERTICAL))).slice(0,20);
       break;
-    case 'section4':  /* ���� I �~�m�P�i�ځi�K�C�h����j */
+    case 'section4':  /* First move I Mino 1st row (with guide) */
       gCurProgmeIdList = getProblemIdList(GUIDANCE_HORIZONTAL_1);
       break;
-    case 'section5':  /* ���� I �~�m�P�i�� */
+    case 'section5':  /* First move I Mino 1st row */
       gCurProgmeIdList = (shuffle(getProblemIdList(PROB840_HORIZONTAL_1))).slice(0,20);
       break;
-    case 'section6':  /* �S���Q�����i�K�C�h����j */
+    case 'section6':  /* Lay everything down (with guide) */
       gCurProgmeIdList = getProblemIdList(GUIDANCE_HORIZONTAL_LAYDOWN);
       break;
-    case 'section7':  /* �S���Q���� */
+    case 'section7':  /* Lay everything down */
       gCurProgmeIdList = (shuffle(getProblemIdList(PROB840_HORIZONTAL_LAYDOWN))).slice(0,20);
       break;
-    case 'section8':  /* I I L O�i�K�C�h����j */
+    case 'section8':  /* IILO (with guide) */
       gCurProgmeIdList = getProblemIdList(GUIDANCE_HORIZONTAL_IILO);
       break;
-    case 'section9':  /* I I L O */
+    case 'section9':  /* IILO */
       gCurProgmeIdList = (shuffle(getProblemIdList(PROB840_HORIZONTAL_IILO))).slice(0,10);
       break;
-    case 'section10':  /* ���� I �~�m3�i�ځi�K�C�h����j */
+    case 'section10':  /* First move I Mino 3rd row (with guide) */
       gCurProgmeIdList = getProblemIdList(GUIDANCE_HORIZONTAL_3);
       break;
-    case 'section11':  /* ���� I �~�m3�i�� */
+    case 'section11':  /* First move I, 3rd row of mino */
       gCurProgmeIdList = (shuffle(getProblemIdList(PROB840_HORIZONTAL_3))).slice(0,20);
       break;
-    case 'section12':  /* ���ԃe�X�g 20�� */
+    case 'section12':  /* Midterm test 20 questions */
       var array1 = shuffle(getProblemIdList(PROB840_HORIZONTAL_1));
       var array2 = shuffle(getProblemIdList(PROB840_HORIZONTAL_LAYDOWN));
       var array3 = shuffle(getProblemIdList(PROB840_HORIZONTAL_IILO));
       var array4 = shuffle(getProblemIdList(PROB840_HORIZONTAL_3));
       gCurProgmeIdList = (shuffle(((array1.concat(array2)).concat(array3)).concat(array4))).slice(0,20);
       break;
-    case 'section13':  /* LSIO (�K�C�h����)*/
+    case 'section13':  /* LSIO (with guide)*/
       gCurProgmeIdList = getProblemIdList(GUIDANCE_LSIO);
       break;
     case 'section14':  /* LSIO  */
       gCurProgmeIdList = shuffle(getProblemIdList(PROB840_LSIO));
       break;
-    case 'section15':  /* �����e�X�g 30�� */
+    case 'section15':  /* Final exam 30 questions */
       gCurProgmeIdList = (shuffle(getProblemIdList(PROB840))).slice(0,30);
       break;
-    case 'section16':  /* ���ƃe�X�g */
+    case 'section16':  /* Graduation test */
       var array1 = (shuffle(getProblemIdList(PROB840))).slice(0,50);
       var array2 = (shuffle(getProblemIdList(PROB840_MIRROR))).slice(0,50);
       gCurProgmeIdList = shuffle(array1.concat(array2));
       break;
-    case 'section17':  /* ���̂ق��̏����� */
+    case 'section17':  /* Other Clear Methods */
       gCurProgmeIdList = getProblemIdList(GUIDANCE_OTHER_WISE);
       break;
-    case 'section18':  /* I �c�u�� �����_�� 514�� */
+    case 'section18':  /* Other ways to erase */
       gCurProgmeIdList = shuffle(getProblemIdList(PROB840_VERTICAL));
       break;
-    case 'section19':  /* I ���u�� �����_�� 196�� */
+    case 'section19':  /* I Horizontal Random 196 questions */
       var array1 = shuffle(getProblemIdList(PROB840_HORIZONTAL_1));
       var array2 = shuffle(getProblemIdList(PROB840_HORIZONTAL_LAYDOWN));
       var array3 = shuffle(getProblemIdList(PROB840_HORIZONTAL_IILO));
       var array4 = shuffle(getProblemIdList(PROB840_HORIZONTAL_3));
       gCurProgmeIdList = shuffle(((array1.concat(array2)).concat(array3)).concat(array4));
       break;
-    case 'section20':  /* �S711�� */
+    case 'section20':  /* All 711 Questions */
       gCurProgmeIdList = shuffle(getProblemIdList(PROB840));
       break;
-    case 'section21':  /* �S��~���[ */
+    case 'section21':  /* All 711 Questions Mirrored */
       gCurProgmeIdList = shuffle(getProblemIdList(PROB840_MIRROR));
       break;
     default:
-      gCurProgmeIdList = [];/* �����ɓ���ƁA��ʂ����F�ɂȂ��ė�����悤�Ɍ�����͂� */
+      gCurProgmeIdList = [];/* When you enter here, the screen should turn white and appear to crash */
       break;
     }
 
@@ -425,7 +425,7 @@ function SceneSelectSection(){
 }
 
 /*----------------------------------------------------------------------------------------
- ���� �V�[��: ���b�X���J�n ����
+ ☆★ Scene: Lesson begins ★☆
 ----------------------------------------------------------------------------------------*/
 function ScenePerform(){
   switch(gButton){
@@ -436,7 +436,7 @@ function ScenePerform(){
   if(IsPressed()) gScene = 'perform_falling';
 }
 /*----------------------------------------------------------------------------------------
- ���� �V�[��: ���b�X���� ����
+ ☆★ Scene: During lesson ★☆
 ----------------------------------------------------------------------------------------*/
 function ScenePerformFalling(){
   switch(gButton){
@@ -444,13 +444,13 @@ function ScenePerformFalling(){
     gScene = 'select_section';
     return;
   }
-  // �Z���\����
+  // Displaying the skill name
   if(gDfCount > 0){
     gDfCount--;
-    // �J�E���g�I���ŕ\����߂�
+    // Return the display when the count ends
     if(gDfCount == 0) DisplayCaption();
   }
-  // ���C��������
+  // Clearing line
   if(gLineClearCount > 0){
     gLineClearCount--;
     if(gLineClearCount == 0){
@@ -458,26 +458,26 @@ function ScenePerformFalling(){
       caption += gCurProblem.caption;
       RemoveReservedLines()
     }
-    // ���̑���֎~
+    // Do not perform any other operations
     return;
   }
-  // �~�m�𑀍쒆�łȂ��ꍇ
+  // If no mino is being operated
   if(!gCurMino){
-    // �N���A�m�F
+    // Check if cleared
     if(ReqIsCleared()) gScene = 'perform_cleared';
-    // �l�N�X�g�𑗂�B�l�N�X�g���Ȃ���Ύ��s
+    // Send next. If there is no next, fail.
     else if(!Dequeue()){
       gCurMino = null;
       gScene = 'perform_failed';
     }
-    // ���b�N�A�E�g����
+    // Lockout check
     if(AppearsToLockout()){
       Lockout();
       return;
     }
-  // �~�m�𑀍쒆�̏ꍇ
+  // If you are manipulating a mino
   }else{
-    // �L�[���͂ŕ���
+    // Branch by key input
     if(InputsHorizontalMove(true)){
       if(PlaceTest(gCurDir, gCurMino, gCurX + 1, gCurY)){
         gCurX++;
@@ -932,32 +932,32 @@ function CanDisplayPos(x, y){
   return (0 <= x && x < MATRIX_WIDTH && DEADLINE_HEIGHT <= y && y < MATRIX_HEIGHT);
 }
 /*----------------------------------------------------------------------------------------
- ���� �E��] ����
+ ☆★ Right rotation ★☆
 ----------------------------------------------------------------------------------------*/
 function RotateRight(){
   Rotate(true);
 }
 /*----------------------------------------------------------------------------------------
- ���� ����] ����
+ ☆★ Left rotation ★☆
 ----------------------------------------------------------------------------------------*/
 function RotateLeft(){
   Rotate(false);
 }
-function Rotate180() {
-    RotateRight();
-    RotateRight();
-}
+// function Rotate180() {
+//     RotateRight();
+//     RotateRight();
+// }
 /*----------------------------------------------------------------------------------------
- ���� ��] ����
+ ☆★ Rotation ★☆
 
- <toRight>�� true �Ȃ�E��]�Afalse �Ȃ獶��]�����܂��B
+ If <toRight> is true, it rotates right; if it is false, it rotates left.
 ----------------------------------------------------------------------------------------*/
 function Rotate(toRight){
   var newDir = (gCurDir + (toRight ? 1 : 3)) % 4;
   var rotRule = gCurMino.rotationRule;
   var newX, newY;
   var rotateRuleId;
-  // ��]���[���̃e�X�g�B���������甽�f
+  // Test the rotation rules. If successful, apply them.
   var canRotate = false;
   for(var i = 0; i < ROTATE_RULES; i++){
     newX = gCurX + rotRule.dx[toRight ? 0 : 1][gCurDir][i];
@@ -976,6 +976,32 @@ function Rotate(toRight){
     if(IsLanding()) gNdCount = NATURAL_DROP_SPAN;
   }
 }
+
+function Rotate180(){
+  var newDir = (gCurDir + 2) % 4;
+  var rotRule = gCurMino.rotationRule;
+  var newX, newY;
+  var rotateRuleId;
+  // Test the rotation rules. If successful, apply them.
+  var canRotate = false;
+  for(var i = 0; i < ROTATE_RULES; i++){
+    newX = gCurX + rotRule.dx[2][gCurDir][i];
+    newY = gCurY + rotRule.dy[2][gCurDir][i];
+    if(PlaceTest(newDir, gCurMino, newX, newY)){
+      gCurX = newX;
+      gCurY = newY;
+      gCurDir = newDir;
+      canRotate = true;
+      rotateRuleId = i;
+      break;
+    }
+  }
+  if(canRotate){
+    SetTSpinType(i);
+    if(IsLanding()) gNdCount = NATURAL_DROP_SPAN;
+  }
+}
+
 /*----------------------------------------------------------------------------------------
  ���� T-SPIN �������� ����
 

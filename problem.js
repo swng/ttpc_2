@@ -1,10 +1,10 @@
 /*----------------------------------------------------------------------------------------
-�ｿｽ�ｿｽ�ｿｽ�ｿｽ �ｿｽI�ｿｽu�ｿｽW�ｿｽF�ｿｽN�ｿｽg: �ｿｽ�ｿｽ�ｿｽ �ｿｽ�ｿｽ�ｿｽ�ｿｽ
+☆★ Object: Problem ★☆
 ----------------------------------------------------------------------------------------*/
 function ProblemWarmingUp(id){
   switch(id){
     case  0:
-    // �ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ}�ｿｽg�ｿｽ�ｿｽ�ｿｽb�ｿｽN�ｿｽX�ｿｽB�ｿｽf�ｿｽb�ｿｽh�ｿｽ�ｿｽ�ｿｽC�ｿｽ�ｿｽ�ｿｽﾈ擾ｿｽﾍ含めなゑｿｽ
+    // Initial matrix, not including the deadline
     this.initialBlocks = [[0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
@@ -25,18 +25,18 @@ function ProblemWarmingUp(id){
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0]];
-    this.ingredients = [[],Z,T,S,J,O,L,I,I,O,J];  // �ｿｽg�ｿｽp�ｿｽﾂ能�ｿｽ~�ｿｽm �ｿｽ謫ｪ�ｿｽv�ｿｽf�ｿｽﾍ擾ｿｽ�ｿｽ�ｿｽ�ｿｽz�ｿｽ[�ｿｽ�ｿｽ�ｿｽh�ｿｽ~�ｿｽm
+    this.ingredients = [[],Z,T,S,J,O,L,I,I,O,J];  // Available elements The first element is the initial hold element
     this.caption = 'Tetris part 1';
     this.hint = 'This is an example opener for the first 7 pieces when aiming for a Perfect Clear.';
-    this.guides = [G(Z, 0, 6, 18), G(T, 3, 8, 17), G(S, 0, 7, 16), G(J, 0, 0, 18), G(O, 0, 0, 17), G(L, 2, 0, 15), G(I, 3, 2, 16), G(I, 0, 4, 15), G(O, 0, 3, 18), G(J, 2, 4, 17)];  // �ｿｽK�ｿｽC�ｿｽh �ｿｽ�成�ｿｽ�ｿｽ�ｿｽ�ｿｽﾛは設置�ｿｽ~�ｿｽm�ｿｽﾌダ�ｿｽ�ｿｽ�ｿｽv�ｿｽ�ｿｽ�ｿｽ�用�ｿｽittt.js�ｿｽﾉゑｿｽconsole.log�ｿｽﾉ設置�ｿｽ~�ｿｽm�ｿｽ�ｿｽ�ｿｽ_�ｿｽ�ｿｽ�ｿｽv�ｿｽ�ｿｽ�ｿｽﾄゑｿｽ�ｿｽ�ｿｽj
-    this.useGuide = true;  // �ｿｽK�ｿｽC�ｿｽh�ｿｽg�ｿｽp(R�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽﾈゑｿｽ�ｿｽﾄゑｿｽ�ｿｽK�ｿｽC�ｿｽh�ｿｽ�用�ｿｽ�ｿｽ�ｿｽ�ｿｽﾆゑｿｽtrue)
-    this.req = [];       // �ｿｽm�ｿｽ�ｿｽ�ｿｽ}( REQuired features )
+    this.guides = [G(Z, 0, 6, 18), G(T, 3, 8, 17), G(S, 0, 7, 16), G(J, 0, 0, 18), G(O, 0, 0, 17), G(L, 2, 0, 15), G(I, 3, 2, 16), G(I, 0, 4, 15), G(O, 0, 3, 18), G(J, 2, 4, 17)];  // Use dump information of installed mino when creating guide (ttt.js dumps installed mino to console.log)
+    this.useGuide = true; // Use guide (true when using guide without pressing R)
+    this.req = [];       // Quota( REQuired features )
     this.req.push(0);    //   [0]: Single
     this.req.push(0);    //   [1]: Double
     this.req.push(0);    //   [2]: Triple
     this.req.push(0);    //   [3]: Tetris
-    this.req.push(0);    //   [4]: T-Spin Mini ( 0 �ｿｽ�ｿｽ)
-    this.req.push(0);    //   [5]: T-Spin ( 0 �ｿｽ�ｿｽ)
+    this.req.push(0);    //   [4]: T-Spin Mini ( 0 列)
+    this.req.push(0);    //   [5]: T-Spin ( 0 列)
     this.req.push(0);    //   [6]: Mini T-Spin Single
     this.req.push(0);    //   [7]: T-Spin Single
     this.req.push(0);    //   [8]: T-Spin Double
@@ -47,7 +47,7 @@ function ProblemWarmingUp(id){
     break;
 
     default:
-    // �ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ}�ｿｽg�ｿｽ�ｿｽ�ｿｽb�ｿｽN�ｿｽX�ｿｽB�ｿｽf�ｿｽb�ｿｽh�ｿｽ�ｿｽ�ｿｽC�ｿｽ�ｿｽ�ｿｽﾈ擾ｿｽﾍ含めなゑｿｽ
+    // Initial matrix, not including the deadline 
     this.initialBlocks = [[0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
@@ -68,18 +68,18 @@ function ProblemWarmingUp(id){
     [1,1,1,1,1,1,1,1,1,0],
     [1,1,1,1,1,1,1,1,1,0],
     [1,1,1,1,1,1,1,1,1,0]];
-    this.ingredients = [[],I];  // �ｿｽg�ｿｽp�ｿｽﾂ能�ｿｽ~�ｿｽm �ｿｽ謫ｪ�ｿｽv�ｿｽf�ｿｽﾍ擾ｿｽ�ｿｽ�ｿｽ�ｿｽz�ｿｽ[�ｿｽ�ｿｽ�ｿｽh�ｿｽ~�ｿｽm
-    this.caption = 'Tetris part 1';
-    this.hint = 'At first, just decide on TETRiS (4 rows erased) for ﾂ･ n. First of all, ﾂ･ n Warm up here!';
-    this.guides = [];    // �ｿｽK�ｿｽC�ｿｽh �ｿｽ�成�ｿｽ�ｿｽ�ｿｽ�ｿｽﾛは設置�ｿｽ~�ｿｽm�ｿｽﾌダ�ｿｽ�ｿｽ�ｿｽv�ｿｽ�ｿｽ�ｿｽ�用�ｿｽittt.js�ｿｽﾉゑｿｽconsole.log�ｿｽﾉ設置�ｿｽ~�ｿｽm�ｿｽ�ｿｽ�ｿｽ_�ｿｽ�ｿｽ�ｿｽv�ｿｽ�ｿｽ�ｿｽﾄゑｿｽ�ｿｽ�ｿｽj
-    this.useGuide = true;  // �ｿｽK�ｿｽC�ｿｽh�ｿｽg�ｿｽp(R�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽﾈゑｿｽ�ｿｽﾄゑｿｽ�ｿｽK�ｿｽC�ｿｽh�ｿｽ�用�ｿｽ�ｿｽ�ｿｽ�ｿｽﾆゑｿｽtrue)
-    this.req = [];       // �ｿｽm�ｿｽ�ｿｽ�ｿｽ}( REQuired features )
+    this.ingredients = [[],I]; // Available elements The first element is the initial hold element
+    this.caption = 'Tetris Part 1';
+    this.hint = 'At first, just keep doing TETRiS (4 row erase). First, warm up here!';
+    this.guides = []; // When creating a guide, use the dump information of the installed items (ttt.js dumps the installed items to console.log)
+    this.useGuide = true; // Use guide (true when using guide without pressing R)
+    this.req = [];       // Quota( REQuired features )
     this.req.push(0);    //   [0]: Single
     this.req.push(0);    //   [1]: Double
     this.req.push(0);    //   [2]: Triple
     this.req.push(1);    //   [3]: Tetris
-    this.req.push(0);    //   [4]: T-Spin Mini ( 0 �ｿｽ�ｿｽ)
-    this.req.push(0);    //   [5]: T-Spin ( 0 �ｿｽ�ｿｽ)
+    this.req.push(0);    //   [4]: T-Spin Mini ( 0 列)
+    this.req.push(0);    //   [5]: T-Spin ( 0 列)
     this.req.push(0);    //   [6]: Mini T-Spin Single
     this.req.push(0);    //   [7]: T-Spin Single
     this.req.push(0);    //   [8]: T-Spin Double
@@ -102,7 +102,7 @@ function Problem840(id){
   this.useGuide = false;
   this.req = [0,0,0,0,0,0,0,0,0,0,1,0,0];
 
-  /* �ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽcase�ｿｽ�ｿｽ�ｿｽ�ｿｽ �ｿｽu�ｿｽe�ｿｽg�ｿｽ�ｿｽ�ｿｽX_�ｿｽp�ｿｽt�ｿｽF�ｿｽe�ｿｽ�ｿｽ�ｿｽv�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ.xlsx�ｿｽv�ｿｽﾌ「�ｿｽe�ｿｽ�ｿｽ�ｿｽv�ｿｽ�ｿｽ�ｿｽ�ｿｽ_�ｿｽv�ｿｽZ�ｿｽp�ｿｽv�ｿｽV�ｿｽ[�ｿｽg DB�ｿｽｩゑｿｽR�ｿｽs�ｿｽ[�ｿｽ�ｿｽ�ｿｽ驍ｱ�ｿｽ�ｿｽ */
+  /* The case statement here should be copied from the DB column of the "Template Modification_Calculation" sheet in "Tetris_ParfaitTemplateSuccessRate.xlsx" */
   switch(id){
     case   1:    this.ingredients = [[],I,I,J,L,O];    this.guides = GUIDES_ILO;    break;
     case   3:    this.ingredients = [[],I,I,J,L,T];    this.guides = GUIDES_IJT;    break;
@@ -817,7 +817,7 @@ function Problem840(id){
     case 840:    this.ingredients = [[],I,Z,T,S,O];    this.guides = GUIDES_TZS;    break;
 
     default:
-    // �ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ}�ｿｽg�ｿｽ�ｿｽ�ｿｽb�ｿｽN�ｿｽX�ｿｽB�ｿｽf�ｿｽb�ｿｽh�ｿｽ�ｿｽ�ｿｽC�ｿｽ�ｿｽ�ｿｽﾈ擾ｿｽﾍ含めなゑｿｽ
+    // Initial matrix, not including the deadline
     this.initialBlocks = [[0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
@@ -838,18 +838,18 @@ function Problem840(id){
     [1,1,1,1,1,1,1,1,1,0],
     [1,1,1,1,1,1,1,1,1,0],
     [1,1,1,1,1,1,1,1,1,0]];
-    this.ingredients = [[],I];  // �ｿｽg�ｿｽp�ｿｽﾂ能�ｿｽ~�ｿｽm �ｿｽ謫ｪ�ｿｽv�ｿｽf�ｿｽﾍ擾ｿｽ�ｿｽ�ｿｽ�ｿｽz�ｿｽ[�ｿｽ�ｿｽ�ｿｽh�ｿｽ~�ｿｽm
-    this.caption = 'Tetris part 1';
-    this.hint = 'At first, just decide on TETRiS (4 rows erased) for ﾂ･ n. First of all, ﾂ･ n Warm up here!';
-    this.guides = [];    // �ｿｽK�ｿｽC�ｿｽh �ｿｽ�成�ｿｽ�ｿｽ�ｿｽ�ｿｽﾛは設置�ｿｽ~�ｿｽm�ｿｽﾌダ�ｿｽ�ｿｽ�ｿｽv�ｿｽ�ｿｽ�ｿｽ�用�ｿｽittt.js�ｿｽﾉゑｿｽconsole.log�ｿｽﾉ設置�ｿｽ~�ｿｽm�ｿｽ�ｿｽ�ｿｽ_�ｿｽ�ｿｽ�ｿｽv�ｿｽ�ｿｽ�ｿｽﾄゑｿｽ�ｿｽ�ｿｽj
-    this.useGuide = true;  // �ｿｽK�ｿｽC�ｿｽh�ｿｽg�ｿｽp(R�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽﾈゑｿｽ�ｿｽﾄゑｿｽ�ｿｽK�ｿｽC�ｿｽh�ｿｽ�用�ｿｽ�ｿｽ�ｿｽ�ｿｽﾆゑｿｽtrue)
-    this.req = [];       // �ｿｽm�ｿｽ�ｿｽ�ｿｽ}( REQuired features )
+    this.ingredients = [[],I]; // Available elements The first element is the initial hold element
+    this.caption = 'Tetris Part 1';
+    this.hint = 'At first, just keep doing TETRiS (4 row erase). First, warm up here!';
+    this.guides = []; // When creating a guide, use the dump information of the installed items (ttt.js dumps the installed items to console.log)
+    this.useGuide = true; // Use guide (true when using guide without pressing R)
+    this.req = [];       // Quota( REQuired features )
     this.req.push(0);    //   [0]: Single
     this.req.push(0);    //   [1]: Double
     this.req.push(0);    //   [2]: Triple
     this.req.push(1);    //   [3]: Tetris
-    this.req.push(0);    //   [4]: T-Spin Mini ( 0 �ｿｽ�ｿｽ)
-    this.req.push(0);    //   [5]: T-Spin ( 0 �ｿｽ�ｿｽ)
+    this.req.push(0);    //   [4]: T-Spin Mini  ( 0 列)
+    this.req.push(0);    //   [5]: T-Spin  ( 0 列)
     this.req.push(0);    //   [6]: Mini T-Spin Single
     this.req.push(0);    //   [7]: T-Spin Single
     this.req.push(0);    //   [8]: T-Spin Double
@@ -872,7 +872,7 @@ function ProblemWithGuidance(id){
   this.req = [0,0,0,0,0,0,0,0,0,0,1,0,0];
 
   switch(id){
-    /* I �ｿｽc�ｿｽu�ｿｽ�ｿｽ �ｿｽi�ｿｽK�ｿｽC�ｿｽh�ｿｽ�ｿｽ�ｿｽ�ｿｽj*/
+    /* I Vertical (with guide) */
     case  1:    this.ingredients = [[],I,I,J,T];        this.guides = GUIDES_IJT;   break;
     case  2:    this.ingredients = [[],I,I,O,J];        this.guides = GUIDES_IOJ;   break;
     case  3:    this.ingredients = [[],I,I,S,J];        this.guides = GUIDES_ISJ;   break;
@@ -888,7 +888,7 @@ function ProblemWithGuidance(id){
     case 13:    this.ingredients = [[],I,O,J,T];        this.guides = GUIDES_OJT;   break;
     case 14:    this.ingredients = [[],I,T,J,S];        this.guides = GUIDES_TJS;   break;
 
-    /* �ｿｽ�ｿｽ�ｿｽ�ｿｽ I �ｿｽ~�ｿｽm�ｿｽP�ｿｽi�ｿｽﾚ（�ｿｽK�ｿｽC�ｿｽh�ｿｽ�ｿｽ�ｿｽ�ｿｽj */
+    /* First move I Mino 1st row (with guide) */
     case 15:    this.ingredients = [[],I,T,O,J];        this.guides = GUIDES_TOJ;   break;
     case 16:    this.ingredients = [[],I,T,L,O];        this.guides = GUIDES_TLO;   break;
     case 17:    this.ingredients = [[],I,S,T,O];        this.guides = GUIDES_STO;   break;
@@ -896,26 +896,26 @@ function ProblemWithGuidance(id){
     case 19:    this.ingredients = [[],I,S,O,J];        this.guides = GUIDES_SOJ;   break;
     case 20:    this.ingredients = [[],I,T,S,I];        this.guides = GUIDES_TSI;   break;
 
-    /* �ｿｽS�ｿｽ�ｿｽ�ｿｽQ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽi�ｿｽK�ｿｽC�ｿｽh�ｿｽ�ｿｽ�ｿｽ�ｿｽj */
+    /* Lay everything down (with guide) */
     case 21:    this.ingredients = [[],I,L,Z,T];        this.guides = GUIDES_LZT;   break;
     case 22:    this.ingredients = [[],I,L,S,T];        this.guides = GUIDES_LST;   break;
     case 23:    this.ingredients = [[],I,J,Z,T];        this.guides = GUIDES_JZT;   break;
     case 24:    this.ingredients = [[],I,J,S,T];        this.guides = GUIDES_JST2;   break;
 
-    /* I I L O�ｿｽi�ｿｽK�ｿｽC�ｿｽh�ｿｽ�ｿｽ�ｿｽ�ｿｽj */
+    /* IILO (with guide) */
     case 25:    this.ingredients = [[],I,I,L,O];        this.guides = GUIDES_ILO;   break;
     case 26:    this.ingredients = [[],I,L,I,O];        this.guides = GUIDES_LIO;   break;
 
-    /* �ｿｽ�ｿｽ�ｿｽ�ｿｽ I �ｿｽ~�ｿｽm3�ｿｽi�ｿｽﾚ（�ｿｽK�ｿｽC�ｿｽh�ｿｽ�ｿｽ�ｿｽ�ｿｽj */
+    /* First move I Mino 3rd row (with guide) */
     case 27:    this.ingredients = [[],I,L,O,S];        this.guides = GUIDES_LOS;   break;
     case 28:    this.ingredients = [[],I,L,I,Z];        this.guides = GUIDES_LIZ;   break;
     case 29:    this.ingredients = [[],I,O,J,S];        this.guides = GUIDES_OJS;   break;
 
-    /* LSIO �ｿｽi�ｿｽK�ｿｽC�ｿｽh�ｿｽ�ｿｽ�ｿｽ�ｿｽj*/
+    /* LSIO (with guide) */
     case 30:    this.ingredients = [[],L,S,I,O];        this.guides = GUIDES_LSIO;   break;
 
     default:
-    // �ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ}�ｿｽg�ｿｽ�ｿｽ�ｿｽb�ｿｽN�ｿｽX�ｿｽB�ｿｽf�ｿｽb�ｿｽh�ｿｽ�ｿｽ�ｿｽC�ｿｽ�ｿｽ�ｿｽﾈ擾ｿｽﾍ含めなゑｿｽ
+    // Initial matrix, not including the deadline
     this.initialBlocks = [[0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
@@ -936,18 +936,18 @@ function ProblemWithGuidance(id){
     [1,1,1,1,1,1,1,1,1,0],
     [1,1,1,1,1,1,1,1,1,0],
     [1,1,1,1,1,1,1,1,1,0]];
-    this.ingredients = [[],I];  // �ｿｽg�ｿｽp�ｿｽﾂ能�ｿｽ~�ｿｽm �ｿｽ謫ｪ�ｿｽv�ｿｽf�ｿｽﾍ擾ｿｽ�ｿｽ�ｿｽ�ｿｽz�ｿｽ[�ｿｽ�ｿｽ�ｿｽh�ｿｽ~�ｿｽm
-    this.caption = 'Tetris part 1';
-    this.hint = 'At first, just decide on TETRiS (4 rows erased) for ﾂ･ n. First of all, ﾂ･ n Warm up here!';
-    this.guides = [];    // �ｿｽK�ｿｽC�ｿｽh �ｿｽ�成�ｿｽ�ｿｽ�ｿｽ�ｿｽﾛは設置�ｿｽ~�ｿｽm�ｿｽﾌダ�ｿｽ�ｿｽ�ｿｽv�ｿｽ�ｿｽ�ｿｽ�用�ｿｽittt.js�ｿｽﾉゑｿｽconsole.log�ｿｽﾉ設置�ｿｽ~�ｿｽm�ｿｽ�ｿｽ�ｿｽ_�ｿｽ�ｿｽ�ｿｽv�ｿｽ�ｿｽ�ｿｽﾄゑｿｽ�ｿｽ�ｿｽj
-    this.useGuide = true;  // �ｿｽK�ｿｽC�ｿｽh�ｿｽg�ｿｽp(R�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽﾈゑｿｽ�ｿｽﾄゑｿｽ�ｿｽK�ｿｽC�ｿｽh�ｿｽ�用�ｿｽ�ｿｽ�ｿｽ�ｿｽﾆゑｿｽtrue)
-    this.req = [];       // �ｿｽm�ｿｽ�ｿｽ�ｿｽ}( REQuired features )
+    this.ingredients = [[],I]; // Available elements The first element is the initial hold element
+    this.caption = 'Tetris Part 1';
+    this.hint = 'At first, just keep doing TETRiS (4 row erase). First, warm up here!';
+    this.guides = []; // When creating a guide, use the dump information of the installed items (ttt.js dumps the installed items to console.log)
+    this.useGuide = true; // Use guide (true when using guide without pressing R)
+    this.req = [];       // Quota( REQuired features )
     this.req.push(0);    //   [0]: Single
     this.req.push(0);    //   [1]: Double
     this.req.push(0);    //   [2]: Triple
     this.req.push(1);    //   [3]: Tetris
-    this.req.push(0);    //   [4]: T-Spin Mini ( 0 �ｿｽ�ｿｽ)
-    this.req.push(0);    //   [5]: T-Spin ( 0 �ｿｽ�ｿｽ)
+    this.req.push(0);    //   [4]: T-Spin Mini ( 0 列)
+    this.req.push(0);    //   [5]: T-Spin ( 0 列)
     this.req.push(0);    //   [6]: Mini T-Spin Single
     this.req.push(0);    //   [7]: T-Spin Single
     this.req.push(0);    //   [8]: T-Spin Double
@@ -999,7 +999,7 @@ function ProblemOtherwise(id){
     case   27:    this.ingredients = [[],I,T,J,S];    this.guides = [G(I, 3, 2, 16),G(T, 2, 4, 16),G(J, 1, 3, 17),G(S, 2, 5, 17)];    break;
 
     default:
-    // �ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ}�ｿｽg�ｿｽ�ｿｽ�ｿｽb�ｿｽN�ｿｽX�ｿｽB�ｿｽf�ｿｽb�ｿｽh�ｿｽ�ｿｽ�ｿｽC�ｿｽ�ｿｽ�ｿｽﾈ擾ｿｽﾍ含めなゑｿｽ
+    // Initial matrix, not including the deadline
     this.initialBlocks = [[0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
@@ -1020,18 +1020,18 @@ function ProblemOtherwise(id){
     [1,1,1,1,1,1,1,1,1,0],
     [1,1,1,1,1,1,1,1,1,0],
     [1,1,1,1,1,1,1,1,1,0]];
-    this.ingredients = [[],I];  // �ｿｽg�ｿｽp�ｿｽﾂ能�ｿｽ~�ｿｽm �ｿｽ謫ｪ�ｿｽv�ｿｽf�ｿｽﾍ擾ｿｽ�ｿｽ�ｿｽ�ｿｽz�ｿｽ[�ｿｽ�ｿｽ�ｿｽh�ｿｽ~�ｿｽm
-    this.caption = 'Tetris part 1';
-    this.hint = 'At first, just decide on TETRiS (4 rows erased) for ﾂ･ n. First of all, ﾂ･ n Warm up here!';
-    this.guides = [];    // �ｿｽK�ｿｽC�ｿｽh �ｿｽ�成�ｿｽ�ｿｽ�ｿｽ�ｿｽﾛは設置�ｿｽ~�ｿｽm�ｿｽﾌダ�ｿｽ�ｿｽ�ｿｽv�ｿｽ�ｿｽ�ｿｽ�用�ｿｽittt.js�ｿｽﾉゑｿｽconsole.log�ｿｽﾉ設置�ｿｽ~�ｿｽm�ｿｽ�ｿｽ�ｿｽ_�ｿｽ�ｿｽ�ｿｽv�ｿｽ�ｿｽ�ｿｽﾄゑｿｽ�ｿｽ�ｿｽj
-    this.useGuide = true;  // �ｿｽK�ｿｽC�ｿｽh�ｿｽg�ｿｽp(R�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽﾈゑｿｽ�ｿｽﾄゑｿｽ�ｿｽK�ｿｽC�ｿｽh�ｿｽ�用�ｿｽ�ｿｽ�ｿｽ�ｿｽﾆゑｿｽtrue)
-    this.req = [];       // �ｿｽm�ｿｽ�ｿｽ�ｿｽ}( REQuired features )
+    this.ingredients = [[],I]; // Available elements The first element is the initial hold element
+    this.caption = 'Tetris Part 1';
+    this.hint = 'At first, just keep doing TETRiS (4 row erase). First, warm up here!';
+    this.guides = []; // When creating a guide, use the dump information of the installed items (ttt.js dumps the installed items to console.log)
+    this.useGuide = true; // Use guide (true when using guide without pressing R)
+    this.req = [];       // Quota( REQuired features )
     this.req.push(0);    //   [0]: Single
     this.req.push(0);    //   [1]: Double
     this.req.push(0);    //   [2]: Triple
     this.req.push(1);    //   [3]: Tetris
-    this.req.push(0);    //   [4]: T-Spin Mini ( 0 �ｿｽ�ｿｽ)
-    this.req.push(0);    //   [5]: T-Spin ( 0 �ｿｽ�ｿｽ)
+    this.req.push(0);    //   [4]: T-Spin Mini ( 0 列)
+    this.req.push(0);    //   [5]: T-Spin ( 0 列)
     this.req.push(0);    //   [6]: Mini T-Spin Single
     this.req.push(0);    //   [7]: T-Spin Single
     this.req.push(0);    //   [8]: T-Spin Double
@@ -1052,7 +1052,7 @@ function Problem840_Mirror(id){
   this.useGuide = false;
   this.req = [0,0,0,0,0,0,0,0,0,0,1,0,0];
 
-  /* �ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽcase�ｿｽ�ｿｽ�ｿｽ�ｿｽ �ｿｽu�ｿｽe�ｿｽg�ｿｽ�ｿｽ�ｿｽX_�ｿｽp�ｿｽt�ｿｽF�ｿｽe�ｿｽ�ｿｽ�ｿｽv�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ.xlsx�ｿｽv�ｿｽﾌ「�ｿｽe�ｿｽ�ｿｽ�ｿｽv�ｿｽ�ｿｽ�ｿｽ�ｿｽ_�ｿｽ~�ｿｽ�ｿｽ�ｿｽ[_�ｿｽv�ｿｽZ�ｿｽp�ｿｽv�ｿｽV�ｿｽ[�ｿｽg DB�ｿｽｩゑｿｽR�ｿｽs�ｿｽ[�ｿｽ�ｿｽ�ｿｽ驍ｱ�ｿｽ�ｿｽ */
+  /* The case statement here should be copied from the DB column of the "Template Modification_Mirror_Calculation" sheet in "Tetris_ParfaitTemplateSuccessRate.xlsx" */
   switch(id){
     case   1:    this.ingredients = [[],I,I,J,L,O];    this.guides = GUIDES_MIRROR_IJO;    break;
     case   2:    this.ingredients = [[],I,I,J,L,S];    this.guides = GUIDES_MIRROR_JIS;    break;
@@ -1767,7 +1767,7 @@ function Problem840_Mirror(id){
     case 840:    this.ingredients = [[],I,Z,T,S,O];    this.guides = GUIDES_MIRROR_TSZ;    break;
 
     default:
-    // �ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ}�ｿｽg�ｿｽ�ｿｽ�ｿｽb�ｿｽN�ｿｽX�ｿｽB�ｿｽf�ｿｽb�ｿｽh�ｿｽ�ｿｽ�ｿｽC�ｿｽ�ｿｽ�ｿｽﾈ擾ｿｽﾍ含めなゑｿｽ
+    // Initial matrix, not including the deadline
     this.initialBlocks = [[0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
@@ -1788,18 +1788,18 @@ function Problem840_Mirror(id){
     [1,1,1,1,1,1,1,1,1,0],
     [1,1,1,1,1,1,1,1,1,0],
     [1,1,1,1,1,1,1,1,1,0]];
-    this.ingredients = [[],I];  // �ｿｽg�ｿｽp�ｿｽﾂ能�ｿｽ~�ｿｽm �ｿｽ謫ｪ�ｿｽv�ｿｽf�ｿｽﾍ擾ｿｽ�ｿｽ�ｿｽ�ｿｽz�ｿｽ[�ｿｽ�ｿｽ�ｿｽh�ｿｽ~�ｿｽm
-    this.caption = 'Tetris part 1';
-    this.hint = 'At first, just decide on TETRiS (4 rows erased) for ﾂ･ n. First of all, ﾂ･ n Warm up here!';
-    this.guides = [];    // �ｿｽK�ｿｽC�ｿｽh �ｿｽ�成�ｿｽ�ｿｽ�ｿｽ�ｿｽﾛは設置�ｿｽ~�ｿｽm�ｿｽﾌダ�ｿｽ�ｿｽ�ｿｽv�ｿｽ�ｿｽ�ｿｽ�用�ｿｽittt.js�ｿｽﾉゑｿｽconsole.log�ｿｽﾉ設置�ｿｽ~�ｿｽm�ｿｽ�ｿｽ�ｿｽ_�ｿｽ�ｿｽ�ｿｽv�ｿｽ�ｿｽ�ｿｽﾄゑｿｽ�ｿｽ�ｿｽj
-    this.useGuide = true;  // �ｿｽK�ｿｽC�ｿｽh�ｿｽg�ｿｽp(R�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽﾈゑｿｽ�ｿｽﾄゑｿｽ�ｿｽK�ｿｽC�ｿｽh�ｿｽ�用�ｿｽ�ｿｽ�ｿｽ�ｿｽﾆゑｿｽtrue)
-    this.req = [];       // �ｿｽm�ｿｽ�ｿｽ�ｿｽ}( REQuired features )
+    this.ingredients = [[],I]; // Available elements The first element is the initial hold element
+    this.caption = 'Tetris Part 1';
+    this.hint = 'At first, just keep doing TETRiS (4 row erase). First, warm up here!';
+    this.guides = []; // When creating a guide, use the dump information of the installed items (ttt.js dumps the installed items to console.log)
+    this.useGuide = true; // Use guide (true when using guide without pressing R)
+    this.req = [];       // Quota( REQuired features )
     this.req.push(0);    //   [0]: Single
     this.req.push(0);    //   [1]: Double
     this.req.push(0);    //   [2]: Triple
     this.req.push(1);    //   [3]: Tetris
-    this.req.push(0);    //   [4]: T-Spin Mini ( 0 �ｿｽ�ｿｽ)
-    this.req.push(0);    //   [5]: T-Spin ( 0 �ｿｽ�ｿｽ)
+    this.req.push(0);    //   [4]: T-Spin Mini ( 0 列)
+    this.req.push(0);    //   [5]: T-Spin ( 0 列)
     this.req.push(0);    //   [6]: Mini T-Spin Single
     this.req.push(0);    //   [7]: T-Spin Single
     this.req.push(0);    //   [8]: T-Spin Double
