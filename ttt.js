@@ -478,14 +478,26 @@ function ScenePerformFalling(){
   // If you are manipulating a mino
   }else{
     // Branch by key input
-    if(InputsHorizontalMove(true)){
+    if(InputsHorizontalMove(true) == 0){
       if(PlaceTest(gCurDir, gCurMino, gCurX + 1, gCurY)){
         gCurX++;
         gTSpinType = 0;
         if(IsLanding()) gNdCount = NATURAL_DROP_SPAN;
       }
-    }else if(InputsHorizontalMove(false)){
+    }else if(InputsHorizontalMove(true) == 2){
+      while(PlaceTest(gCurDir, gCurMino, gCurX + 1, gCurY)){
+        gCurX++;
+        gTSpinType = 0;
+        if(IsLanding()) gNdCount = NATURAL_DROP_SPAN;
+      }
+    }else if(InputsHorizontalMove(false) == 0){
       if(PlaceTest(gCurDir, gCurMino, gCurX - 1, gCurY)){
+        gCurX--;
+        gTSpinType = 0;
+        if(IsLanding()) gNdCount = NATURAL_DROP_SPAN;
+      }
+    }else if(InputsHorizontalMove(false) == 2){
+      while(PlaceTest(gCurDir, gCurMino, gCurX - 1, gCurY)){
         gCurX--;
         gTSpinType = 0;
         if(IsLanding()) gNdCount = NATURAL_DROP_SPAN;
@@ -525,11 +537,15 @@ function ScenePerformFalling(){
 
  ���ړ��L�[���������ςȂ��ɂ����Ƃ��A���ړ���^����u�Ԃ��𔻒f���ĕԂ��܂��B�����n�߂��u
  �Ԃ�K��̃��s�[�g�Ԋu�� true ��Ԃ��܂��B
+
 ----------------------------------------------------------------------------------------*/
 function InputsHorizontalMove(toRight){
   keyName = toRight ? KeyR() : KeyL();
-  if(PressedDuration(keyName) < HORIZONTAL_CHARGE_DURATION) return IsPressed(keyName);
-  return (PressedDuration(keyName) - HORIZONTAL_CHARGE_DURATION) % HORIZONTAL_REPEAT_SPAN == 0;
+  if(PressedDuration(keyName) < HORIZONTAL_CHARGE_DURATION) return IsPressed(keyName) ? 0 : 1;
+  if (HORIZONTAL_REPEAT_SPAN == 0) {
+    return 2;
+  }
+  return (PressedDuration(keyName) - HORIZONTAL_CHARGE_DURATION) % HORIZONTAL_REPEAT_SPAN == 0 ? 0 : 1;
 }
 /*----------------------------------------------------------------------------------------
  ���� �\�t�g�h���b�v���s? ����
@@ -985,8 +1001,8 @@ function Rotate180(){
   // Test the rotation rules. If successful, apply them.
   var canRotate = false;
   for(var i = 0; i < ROTATE_RULES; i++){
-    newX = gCurX + rotRule.dx[2][gCurDir][i];
-    newY = gCurY + rotRule.dy[2][gCurDir][i];
+    newX = gCurX - rotRule.dx[2][gCurDir][i];
+    newY = gCurY - rotRule.dy[2][gCurDir][i];
     if(PlaceTest(newDir, gCurMino, newX, newY)){
       gCurX = newX;
       gCurY = newY;
@@ -1218,7 +1234,7 @@ function AfterClear(){
   if(gCurProblemId >= gCurProgmeIdList.length - 1){
     gScene = 'select_section';
     gProblemsCleared[gCurSectionId] = true;
-    Save('Prg' + curSectionId, '1');
+    Save('Prg' + gCurSectionId, '1');
   }
   else{
     gCurProblemId++;

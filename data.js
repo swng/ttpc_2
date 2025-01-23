@@ -13,8 +13,8 @@ var LINE_CLEAR_DURATION = 1;        // <Fre> line erasing time time
 var DISPLAY_FEATURES_DURATION = 45;  // <Fre> display time of activated technique
 var NEXT_MINOS = 5;                  // Number display
 var ROTATE_RULES = 5;                // Number of rotation rules
-var HORIZONTAL_CHARGE_DURATION = 7;  // Time from <frame> Key to start pushing the key to the start of horizontal movement
-var HORIZONTAL_REPEAT_SPAN = 1;      // <Fre> Side -to -side sense of time
+var HORIZONTAL_CHARGE_DURATION = 3;  // Time from <frame> Key to start pushing the key to the start of horizontal movement
+var HORIZONTAL_REPEAT_SPAN = 0;      // <Fre> Side -to -side sense of time
 
 var INITIAL_DIR = 0;                  // Mino orientation at the time of appearance
 var INITIAL_X = 3;                    // Mino X coordinates at the time of appearance
@@ -110,11 +110,10 @@ function RotRuleGen(){
   [0,  1,  1,  0,  1],    // r → i
   [0, -1, -1,  0, -1],    // v → r
   [0, -1, -1,  0, -1]],   // l → v
-  // TODO: put in actual kick table for 180
-  [[0, 0, 0, 0, 0],       // i → v
-  [0, 0, 0, 0, 0],        // r → l
-  [0, 0, 0, 0, 0],        // v → i
-  [0, 0, 0, 0, 0]]];      // l → r
+  [[0, 0, -1, 0, 1],       // i → v
+  [0, 0, -1, 0, 1],        // r → l
+  [0, 0, -1, 0, 1],        // v → i
+  [0, 0, -1, 0, 1]]];      // l → r  
   this.dy = [[[0,  0, -1,  2,  2],    // i → r
   [0,  0,  1, -2, -2],    // r → v
   [0,  0, -1,  2,  2],    // v → l
@@ -123,11 +122,10 @@ function RotRuleGen(){
   [0,  0,  1, -2, -2],    // r → i
   [0,  0, -1,  2,  2],    // v → r
   [0,  0,  1, -2, -2]],  // l → v
-  // TODO: put in actual kick table for 180
-  [[0, 0, 0, 0, 0],       // i → v
-  [0, 0, 0, 0, 0],        // r → l
-  [0, 0, 0, 0, 0],        // v → i
-  [0, 0, 0, 0, 0]]];      // l → r
+  [[0, 1, 0, -1, 0],       // i → v
+  [0, 1, 0, -1, 0],        // r → l
+  [0, 1, 0, -1, 0],        // v → i
+  [0, 1, 0, -1, 0]]];      // l → r
   return this;
 }
 /*----------------------------------------------------------------------------------------
@@ -143,8 +141,7 @@ function RotRuleI(){
   [0,  2, -1,  2, -1],    // r → i
   [0,  1, -2,  1, -2],    // v → r
   [0, -2,  1, -2,  1]],  // l → v
-  // TODO: put in actual kick table for 180 I
-  [[0, 1, 0, 0, 0],       // i → v
+  [[0, 0, 0, 0, 0],       // i → v
   [0, 0, 0, 0, 0],        // r → l
   [0, 0, 0, 0, 0],        // v → i
   [0, 0, 0, 0, 0]]];      // l → r
@@ -156,7 +153,6 @@ function RotRuleI(){
   [0,  0,  0, -1,  2],    // r → i
   [0,  0,  0,  2, -1],    // v → r
   [0,  0,  0,  1, -2]],  // l → v
-  // TODO: put in actual kick table for 180 I
   [[0, 0, 0, 0, 0],       // i → v
   [0, 0, 0, 0, 0],        // r → l
   [0, 0, 0, 0, 0],        // v → i
