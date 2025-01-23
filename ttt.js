@@ -126,6 +126,7 @@ function SetupScene(scene){
     gLyrSections.Show();
     RefreshProblemButtons();
     gCurUseGuideFlg = false;
+    document.getElementById("key_guide_info").innerText = gKeys[7];
     break;
   case 'perform':
     gCurMino = null;
