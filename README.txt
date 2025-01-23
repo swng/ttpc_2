@@ -1,17 +1,16 @@
-“à—e
-@ƒeƒgƒŠƒX‚ÌŠJ–‹ƒp[ƒtƒFƒNƒgƒNƒŠƒA‚Ì—ûK‚ª‚Å‚«‚Ü‚·B
+content
+ã€€You can practice perfect clearing the opening of Tetris.
 
-—V‚Ñ•û
+How to play
 --------------------------------------------------------
-@1. https://github.com/sakuramochi84/ttpc ‚ğŠJ‚­
-@2.uClone or downloadv‚ğƒNƒŠƒbƒN
-@3.uDownload ZIPv‚©‚çƒtƒ@ƒCƒ‹ˆê®‚ğƒ_ƒEƒ“ƒ[ƒh
-@4. ƒ[ƒJƒ‹‚Ì“K“–‚ÈêŠiƒfƒXƒNƒgƒbƒv‚È‚Çj‚É‰ğ“€
-@5. ƒuƒ‰ƒEƒUiGoogle Chrome‚âIE‚È‚Çj‚Åindex.html‚ğŠJ‚­
+ã€€1. Open https://github.com/sakuramochi84/ttpc
+ã€€2. Click "Clone or download"
+ã€€3. Download the complete set of files from "Download ZIP"
+ã€€4. Unzip the file to a suitable local location (such as the desktop)
+ã€€5. Open index.html in a browser (e.g. Google Chrome or IE)
 --------------------------------------------------------
 
-íœ‚Ìd•û
-@ƒ_ƒEƒ“ƒ[ƒh‚µ‚½ƒtƒ@ƒCƒ‹‚ğ‚·‚×‚Äíœ‚·‚ê‚Î‚æ‚¢‚Å‚·B
+How to delete
+ã€€You can just delete all the files you downloaded.
 
-2018/02/12 ‚³‚­‚ç‚à‚¿
-
+2018/02/12 Sakuramochi
