@@ -1,54 +1,54 @@
 /*========================================================================================
- ���� ttt.js ����
+ □■ ttt.js ■□
 ========================================================================================*/
 /*----------------------------------------------------------------------------------------
- ���� �O���[�o���ϐ��ꗗ ����
+ ☆★ List of global variables ★☆
 ----------------------------------------------------------------------------------------*/
-var gButton;          // �����ꂽ�{�^���̖��O�B�t���[���I�����ɏ�����(�󕶎�����)�����
-var gLyrSections;     // �Z�N�V�����I�����C���[( LaYeR )
-var gLyrPerform;      // �Q�[�����C���[
-var gLyrPreferences;  // �ݒ背�C���[
-var gScene;           // �V�[����
-var gPrevScene;       // �O�̃t���[���ł̃V�[����( PREVious SCENE )
+var gButton;          // The name of the pressed button. Initialized at the end of the frame (empty character string fee)
+var gLyrSections;     // Section selection layer (Layer)
+var gLyrPerform;      // Game layer
+var gLyrPreferences;  // Setting layer
+var gScene;           // Scene name
+var gPrevScene;       // Scene name in the previous frame (PREVious SCENE)
 /*
-�� �V�[���\��
- select_sections �� preferences
-   ����
+● Scene structure
+ select_sections ⇔ preferences
+   ↓↑
  perform
 */
-var gKeys;            // �L�[�̖��O
+var gKeys;            // Names of the keys
 var gSelectForms = ['key_left', 'key_right', 'key_softdrop', 'key_harddrop',
-                    'key_rot_right', 'key_rot_left' , 'key_hold' , 'key_guide', 'key_rot_180'];  // �L�[�I���{�b�N�X�̖��O
+                    'key_rot_right', 'key_rot_left' , 'key_hold' , 'key_guide', 'key_rot_180'];  // Names of the key selection box
 /*
- �L�[��ǉ�����ۂɂ� LoadData() ����� SavePreferences() �ւ̒ǉ��A�܂� Key**() (�L�[����
- �擾���\�b�h)����ѐݒ�Z���N�g�{�b�N�X�̒ǉ���Y��Ȃ��ł��������B
+ To add a key, add it to LoadData() and SavePreferences(), and also use Key**() (the key name)
+ Don't forget to add the getter method and the set select box.
 */
 
-var gCurSectionId;    // �I��( CURrent )�̃Z�N�V���� ID
-var gCurProblemId;    // �I�𒆂̖�� ID
-var gCurProblem;      // �I�𒆂̖��I�u�W�F�N�g
-var gCurProblemReq;   // ���m���}
-var gQueue;           // �l�N�X�g��
+var gCurSectionId;    // Current section ID
+var gCurProblemId;    // Selected problem ID
+var gCurProblem;      // The selected problem object
+var gCurProblemReq;   // Problem quota
+var gQueue;           // Next queue
 var gCurMino;
 var gCurHold;
-var gCurUseGuideFlg   // �K�C�h�𗘗p���邩�ǂ���
+var gCurUseGuideFlg   // Whether to use the guide
 var gCurX;
 var gCurY;
 var gCurDir;
 var gNdCount;         // ( Natural Drop COUNT )
 var gDfCount;         // ( Display Features COUNT )
-var gCurGuide;        // ���݂̃K�C�h
-var gGuidesQueue;     // �K�C�h�z��
+var gCurGuide;        // Current guide
+var gGuidesQueue;     // Guides array
 
-var gLineClearCount;  // ���C���������o�̃J�E���g
-var gTSpinType;       // 0= T �X�s���Ȃ�, 1= T �X�s���E�~�j, 2=T �X�s��
-var gRens;            // �p������ REN ��
-var gIsReadyToB2b;    // ���� BACK to BACK �ɂȂ肤��?
+var gLineClearCount;  // Line clearing count
+var gTSpinType;       // 0= No T spin, 1= T spin mini, 2= T spin
+var gRens;            // ongoing REN count
+var gIsReadyToB2b;    // Could the next one be BACK to BACK?
 
 /*----------------------------------------------------------------------------------------
- ���� �e���ւ̃A�N�Z�X�ݒ� ����
+ ☆★ Access settings for each question ★☆
 
- ���f�[�^�� problem.js ���ɋL�ڂ���Ă��܂��B
+ The problem data is described in problem.js etc.
 ----------------------------------------------------------------------------------------*/
 var gProblems = getProblems();
 var gCurProgmeIdList = [];
@@ -58,9 +58,9 @@ for(var i = 0; i < SECTION_NUM; i++){
 }
 
 /*----------------------------------------------------------------------------------------
- ���� ������ ����
+ ☆★ Initialization★☆
 
- �N������ 1 �x�����Ăяo����܂��B�o�߃t���[������ 0 �Ƃ��Ĉ����܂��B
+ This is called once at startup. The number of elapsed frames is treated as 0.
 ----------------------------------------------------------------------------------------*/
 function Setup(){
   SetupLayers();
@@ -70,9 +70,9 @@ function Setup(){
   LoadData();
 }
 /*----------------------------------------------------------------------------------------
- ���� ���C���[������ ����
+ ☆★Layer Initialization★☆
 
- ���C���[�̃T�C�Y���� css �t�@�C���ŁA���e�� HTML ��Œ�`���Ă��܂��B
+ The layer size etc. are defined in the CSS file, and the content is defined in the HTML.
 ----------------------------------------------------------------------------------------*/
 function SetupLayers(){
   gLyrSections = new Layer('list_sections');
@@ -80,12 +80,12 @@ function SetupLayers(){
   gLyrPreferences = new Layer('preferences');
 }
 /*----------------------------------------------------------------------------------------
- ���� �Ǎ� ����
+ ☆★ Loading ★☆
 
- �N�b�L�[����ݒ�Ɛi����ǂݍ��݂܂��B
+ Reads settings and progress from cookies.
 ----------------------------------------------------------------------------------------*/
 function LoadData(){
-  // �L�[�ݒ�̓Ǎ�
+  // Read the key settings
   gKeys = [];
   gKeys.push(Load('MoveLeft', DEFAULT_KEY_MOVE_LEFT));
   gKeys.push(Load('MoveRight', DEFAULT_KEY_MOVE_RIGHT));
@@ -96,29 +96,29 @@ function LoadData(){
   gKeys.push(Load('Hold', DEFAULT_KEY_HOLD));
     gKeys.push(Load('Guide', DEFAULT_KEY_GUIDE));
     gKeys.push(Load('Rotate180', DEFAULT_KEY_180));
-  // �i���̓Ǎ�
+  // Load the progress
   for(var i = 0; i < SECTION_NUM; i++){
     gProblemsCleared[i] = (Load('Prg' + i, '0') == '1');
   }
 }
 /*----------------------------------------------------------------------------------------
- ���� �t���[�������� ����
+ ☆★ In-frame processing ★☆
 
- 1 �t���[���� 1 ��Ăяo����鏈���ł��B�t���[���Ǘ��� jsmod.js �ōs���Ă��܂��B
+ This process is called once per frame. Frame management is done by jsmod.js.
 ----------------------------------------------------------------------------------------*/
 function Main(){
-  // �V�[�����ς���Ă���ΐ؂�ւ�
+  // Switch if the scene has changed
   if(gPrevScene != gScene){
     TerminateScene(gPrevScene);
     SetupScene(gScene);
-    //�u�O�̃V�[���v�̍X�V
+    // Update the "previous scene"
     gPrevScene = gScene;
   }
   PerformScene(gScene);
   gButton = '';
 }
 /*----------------------------------------------------------------------------------------
- ���� �V�[���J�n ����
+ ☆★ Scene start ★☆
 ----------------------------------------------------------------------------------------*/
 function SetupScene(scene){
   switch(scene){
@@ -126,6 +126,7 @@ function SetupScene(scene){
     gLyrSections.Show();
     RefreshProblemButtons();
     gCurUseGuideFlg = false;
+    document.getElementById("key_guide_info").innerText = gKeys[7];
     break;
   case 'perform':
     gCurMino = null;
@@ -133,7 +134,7 @@ function SetupScene(scene){
     PrepareProblem();
     Refresh();
     gLyrPerform.Show();
-    window.scroll(0, 0);    // ��ԏ�փX�N���[��
+    window.scroll(0, 0);    // scroll to the top
     break;
   case 'perform_falling':
     break;
@@ -155,12 +156,12 @@ function SetupScene(scene){
     Say('perform_caption', 'Using Guide');
     break;
   case 'preferences':
-    // �L�[�ݒ�̕\�����f
+    // Display of key settings
     for(var i = 0; i < gKeys.length; i++){
       document.getElementById(gSelectForms[i]).value = gKeys[i];
     }
     gLyrPreferences.Show();
-    window.scroll(0, 0);    // ��ԏ�փX�N���[��
+    window.scroll(0, 0);    // scroll to the top
     break;
   default:
     gScene = 'select_section';
@@ -168,7 +169,7 @@ function SetupScene(scene){
   }
 }
 /*----------------------------------------------------------------------------------------
- ���� �V�[���I�� ����
+ ☆★ Scene End ★☆
 ----------------------------------------------------------------------------------------*/
 function TerminateScene(scene){
   switch(scene){
@@ -196,7 +197,7 @@ function TerminateScene(scene){
   }
 }
 /*----------------------------------------------------------------------------------------
- ���� �V�[������ ����
+ ☆★ Scene processing ★☆
 ----------------------------------------------------------------------------------------*/
 function PerformScene(scene){
   switch(scene){
@@ -227,23 +228,23 @@ function PerformScene(scene){
   }
 }
 /*----------------------------------------------------------------------------------------
- ���� ��菀�� ����
+ ☆★ Problem Preparation ★☆
 ----------------------------------------------------------------------------------------*/
 function PrepareProblem(){
 
   var curProblemId = gCurProgmeIdList[gCurProblemId];
   gCurProblem = gProblems[curProblemId];
 
-  // �m���}�z����f�B�[�v�R�s�[
+  // Deep copy the norm array
   gCurProblemReq = [];
   for(var i = 0; i < gCurProblem.req.length; i++){
     gCurProblemReq.push(gCurProblem.req[i]);
   }
 
-  // ���\��
+  // Intelligence representation
   DisplayCaption();
   RefreshHint();
-  // �}�g���b�N�X����
+  // Prepare the matrix
   for(var i = 0; i < DEADLINE_HEIGHT; i++){
     for(var j = 0; j < MATRIX_WIDTH; j++){
       gMatrix[i][j] = 0;
@@ -254,7 +255,7 @@ function PrepareProblem(){
       gMatrix[i][j] = gCurProblem.initialBlocks[i - DEADLINE_HEIGHT][j];
     }
   }
-  // �l�N�X�g����
+  // Prepare for next
   gQueue = [];
   gGuidesQueue = [];
   gCurHold = gCurProblem.ingredients[0][0];
@@ -264,14 +265,14 @@ function PrepareProblem(){
   for(var i = 0; i < gCurProblem.guides.length; i++){
     gGuidesQueue.push(gCurProblem.guides[i]);
   }
-  // �e��t���O������
+  // Initialize various flags
   gLineClearCount = -1;
   gTSpinType = 0;
   gRens = -1;
   gIsReadyToB2b = false;
 }
 /*----------------------------------------------------------------------------------------
- ���� ���^�C�g���\�� ����
+ ☆★ Show question title ★☆
 ----------------------------------------------------------------------------------------*/
 function DisplayCaption(){
   var curProblemId = gCurProgmeIdList[gCurProblemId];
@@ -281,9 +282,9 @@ function DisplayCaption(){
   Say("perform_caption", caption);
 }
 /*----------------------------------------------------------------------------------------
- ���� �l�N�X�g�𑗂� ����
+ ☆★ Send Next ★☆
 
- �l�N�X�g�����݂�������Ԃ��܂��B
+ Returns whether next exists.
 ----------------------------------------------------------------------------------------*/
 function Dequeue(){
   if(gQueue.length == 0 && !gCurHold) return false;
@@ -304,7 +305,7 @@ function Dequeue(){
   return true;
 }
 /*----------------------------------------------------------------------------------------
- ���� �q���g�\���𔽉f ����
+ ☆★ Refresh hint display ★☆
 ----------------------------------------------------------------------------------------*/
 function RefreshHint(){
   var hint = gCurProblem.hint;
@@ -314,13 +315,13 @@ function RefreshHint(){
   Say('perform_hint', hint);
 }
 /*----------------------------------------------------------------------------------------
- ���� �Z�N�V�������̋L�� ����
+ ☆★ Section name description ★☆
 ----------------------------------------------------------------------------------------*/
 function RefreshSectionTitle(){
   Say('section_title', SectionTitle(gCurSectionId));
 }
 /*----------------------------------------------------------------------------------------
- ���� �N���A�󋵂��{�^���ɔ��f ����
+ ☆★ Clear status is refreshed on the button ★☆
 ----------------------------------------------------------------------------------------*/
 function RefreshProblemButtons(){
   for(var i = 0; i < SECTION_NUM; i++){
@@ -329,7 +330,7 @@ function RefreshProblemButtons(){
   }
 }
 /*----------------------------------------------------------------------------------------
- ���� �V�[��: �Z�N�V�����I�� ����
+ ☆★Scene: Section selection ★☆
 ----------------------------------------------------------------------------------------*/
 function SceneSelectSection(){
   switch(gButton){
@@ -342,81 +343,81 @@ function SceneSelectSection(){
     gCurProblemId = 0;
 
     switch(gButton){
-    case 'section1':  /* �e���v����g��ł݂悤 */
+    case 'section1':  /* Let's create a template */
       gCurProgmeIdList = getProblemIdList(WARMING_UP);
       break;
-    case 'section2':  /* I �c�u�� �i�K�C�h����j*/
+    case 'section2':  /* I Vertical (with guide) */
       gCurProgmeIdList = getProblemIdList(GUIDANCE_VERTICAL);
       break;
-    case 'section3':  /* I �c�u�� �����_�� 30�� */
+    case 'section3':  /* I Vertical Random 30 questions */
       gCurProgmeIdList = (shuffle(getProblemIdList(PROB840_VERTICAL))).slice(0,20);
       break;
-    case 'section4':  /* ���� I �~�m�P�i�ځi�K�C�h����j */
+    case 'section4':  /* First move I Mino 1st row (with guide) */
       gCurProgmeIdList = getProblemIdList(GUIDANCE_HORIZONTAL_1);
       break;
-    case 'section5':  /* ���� I �~�m�P�i�� */
+    case 'section5':  /* First move I Mino 1st row */
       gCurProgmeIdList = (shuffle(getProblemIdList(PROB840_HORIZONTAL_1))).slice(0,20);
       break;
-    case 'section6':  /* �S���Q�����i�K�C�h����j */
+    case 'section6':  /* Lay everything down (with guide) */
       gCurProgmeIdList = getProblemIdList(GUIDANCE_HORIZONTAL_LAYDOWN);
       break;
-    case 'section7':  /* �S���Q���� */
+    case 'section7':  /* Lay everything down */
       gCurProgmeIdList = (shuffle(getProblemIdList(PROB840_HORIZONTAL_LAYDOWN))).slice(0,20);
       break;
-    case 'section8':  /* I I L O�i�K�C�h����j */
+    case 'section8':  /* IILO (with guide) */
       gCurProgmeIdList = getProblemIdList(GUIDANCE_HORIZONTAL_IILO);
       break;
-    case 'section9':  /* I I L O */
+    case 'section9':  /* IILO */
       gCurProgmeIdList = (shuffle(getProblemIdList(PROB840_HORIZONTAL_IILO))).slice(0,10);
       break;
-    case 'section10':  /* ���� I �~�m3�i�ځi�K�C�h����j */
+    case 'section10':  /* First move I Mino 3rd row (with guide) */
       gCurProgmeIdList = getProblemIdList(GUIDANCE_HORIZONTAL_3);
       break;
-    case 'section11':  /* ���� I �~�m3�i�� */
+    case 'section11':  /* First move I, 3rd row of mino */
       gCurProgmeIdList = (shuffle(getProblemIdList(PROB840_HORIZONTAL_3))).slice(0,20);
       break;
-    case 'section12':  /* ���ԃe�X�g 20�� */
+    case 'section12':  /* Midterm test 20 questions */
       var array1 = shuffle(getProblemIdList(PROB840_HORIZONTAL_1));
       var array2 = shuffle(getProblemIdList(PROB840_HORIZONTAL_LAYDOWN));
       var array3 = shuffle(getProblemIdList(PROB840_HORIZONTAL_IILO));
       var array4 = shuffle(getProblemIdList(PROB840_HORIZONTAL_3));
       gCurProgmeIdList = (shuffle(((array1.concat(array2)).concat(array3)).concat(array4))).slice(0,20);
       break;
-    case 'section13':  /* LSIO (�K�C�h����)*/
+    case 'section13':  /* LSIO (with guide)*/
       gCurProgmeIdList = getProblemIdList(GUIDANCE_LSIO);
       break;
     case 'section14':  /* LSIO  */
       gCurProgmeIdList = shuffle(getProblemIdList(PROB840_LSIO));
       break;
-    case 'section15':  /* �����e�X�g 30�� */
+    case 'section15':  /* Final exam 30 questions */
       gCurProgmeIdList = (shuffle(getProblemIdList(PROB840))).slice(0,30);
       break;
-    case 'section16':  /* ���ƃe�X�g */
+    case 'section16':  /* Graduation test */
       var array1 = (shuffle(getProblemIdList(PROB840))).slice(0,50);
       var array2 = (shuffle(getProblemIdList(PROB840_MIRROR))).slice(0,50);
       gCurProgmeIdList = shuffle(array1.concat(array2));
       break;
-    case 'section17':  /* ���̂ق��̏����� */
+    case 'section17':  /* Other Clear Methods */
       gCurProgmeIdList = getProblemIdList(GUIDANCE_OTHER_WISE);
       break;
-    case 'section18':  /* I �c�u�� �����_�� 514�� */
+    case 'section18':  /* Other ways to erase */
       gCurProgmeIdList = shuffle(getProblemIdList(PROB840_VERTICAL));
       break;
-    case 'section19':  /* I ���u�� �����_�� 196�� */
+    case 'section19':  /* I Horizontal Random 196 questions */
       var array1 = shuffle(getProblemIdList(PROB840_HORIZONTAL_1));
       var array2 = shuffle(getProblemIdList(PROB840_HORIZONTAL_LAYDOWN));
       var array3 = shuffle(getProblemIdList(PROB840_HORIZONTAL_IILO));
       var array4 = shuffle(getProblemIdList(PROB840_HORIZONTAL_3));
       gCurProgmeIdList = shuffle(((array1.concat(array2)).concat(array3)).concat(array4));
       break;
-    case 'section20':  /* �S711�� */
+    case 'section20':  /* All 711 Questions */
       gCurProgmeIdList = shuffle(getProblemIdList(PROB840));
       break;
-    case 'section21':  /* �S��~���[ */
+    case 'section21':  /* All 711 Questions Mirrored */
       gCurProgmeIdList = shuffle(getProblemIdList(PROB840_MIRROR));
       break;
     default:
-      gCurProgmeIdList = [];/* �����ɓ���ƁA��ʂ����F�ɂȂ��ė�����悤�Ɍ�����͂� */
+      gCurProgmeIdList = [];/* When you enter here, the screen should turn white and appear to crash */
       break;
     }
 
@@ -425,7 +426,7 @@ function SceneSelectSection(){
 }
 
 /*----------------------------------------------------------------------------------------
- ���� �V�[��: ���b�X���J�n ����
+ ☆★ Scene: Lesson begins ★☆
 ----------------------------------------------------------------------------------------*/
 function ScenePerform(){
   switch(gButton){
@@ -436,7 +437,7 @@ function ScenePerform(){
   if(IsPressed()) gScene = 'perform_falling';
 }
 /*----------------------------------------------------------------------------------------
- ���� �V�[��: ���b�X���� ����
+ ☆★ Scene: During lesson ★☆
 ----------------------------------------------------------------------------------------*/
 function ScenePerformFalling(){
   switch(gButton){
@@ -444,13 +445,13 @@ function ScenePerformFalling(){
     gScene = 'select_section';
     return;
   }
-  // �Z���\����
+  // Displaying the skill name
   if(gDfCount > 0){
     gDfCount--;
-    // �J�E���g�I���ŕ\����߂�
+    // Return the display when the count ends
     if(gDfCount == 0) DisplayCaption();
   }
-  // ���C��������
+  // Clearing line
   if(gLineClearCount > 0){
     gLineClearCount--;
     if(gLineClearCount == 0){
@@ -458,34 +459,46 @@ function ScenePerformFalling(){
       caption += gCurProblem.caption;
       RemoveReservedLines()
     }
-    // ���̑���֎~
+    // Do not perform any other operations
     return;
   }
-  // �~�m�𑀍쒆�łȂ��ꍇ
+  // If no mino is being operated
   if(!gCurMino){
-    // �N���A�m�F
+    // Check if cleared
     if(ReqIsCleared()) gScene = 'perform_cleared';
-    // �l�N�X�g�𑗂�B�l�N�X�g���Ȃ���Ύ��s
+    // Send next. If there is no next, fail.
     else if(!Dequeue()){
       gCurMino = null;
       gScene = 'perform_failed';
     }
-    // ���b�N�A�E�g����
+    // Lockout check
     if(AppearsToLockout()){
       Lockout();
       return;
     }
-  // �~�m�𑀍쒆�̏ꍇ
+  // If you are manipulating a mino
   }else{
-    // �L�[���͂ŕ���
-    if(InputsHorizontalMove(true)){
+    // Branch by key input
+    if(InputsHorizontalMove(true) == 0){
       if(PlaceTest(gCurDir, gCurMino, gCurX + 1, gCurY)){
         gCurX++;
         gTSpinType = 0;
         if(IsLanding()) gNdCount = NATURAL_DROP_SPAN;
       }
-    }else if(InputsHorizontalMove(false)){
+    }else if(InputsHorizontalMove(true) == 2){
+      while(PlaceTest(gCurDir, gCurMino, gCurX + 1, gCurY)){
+        gCurX++;
+        gTSpinType = 0;
+        if(IsLanding()) gNdCount = NATURAL_DROP_SPAN;
+      }
+    }else if(InputsHorizontalMove(false) == 0){
       if(PlaceTest(gCurDir, gCurMino, gCurX - 1, gCurY)){
+        gCurX--;
+        gTSpinType = 0;
+        if(IsLanding()) gNdCount = NATURAL_DROP_SPAN;
+      }
+    }else if(InputsHorizontalMove(false) == 2){
+      while(PlaceTest(gCurDir, gCurMino, gCurX - 1, gCurY)){
         gCurX--;
         gTSpinType = 0;
         if(IsLanding()) gNdCount = NATURAL_DROP_SPAN;
@@ -499,8 +512,8 @@ function ScenePerformFalling(){
       gScene = 'perform_guide';
     }
     if(IsPressed(KeyH())) Hold();
-    if(IsPressed(KeyHD())) HardDrop();  // �n�[�h�h���b�v���͍͂Ō�ɔ��肷�邱��
-    // ����/���n����
+    if(IsPressed(KeyHD())) HardDrop();  // Hard drop input should be judged last
+    // Fall/landing process
     if(--gNdCount <= 0){
       gNdCount = NATURAL_DROP_SPAN;
       if(!IsLanding()){
@@ -508,11 +521,11 @@ function ScenePerformFalling(){
         gTSpinType = 0;
         gLandingCount = NATURAL_DROP_SPAN;
       }else{
-        // �K�C�h�z��_���v
+        // Guide array dump
         if(DUMP_GUIDE_DATA){
           console.log("G(%s, %d, %d, %d)", gCurMino, gCurDir, gCurX, gCurY-3);
         }
-        // ���n
+        // Landing
         Land();
       }
     }
@@ -521,20 +534,24 @@ function ScenePerformFalling(){
   Refresh();
 }
 /*----------------------------------------------------------------------------------------
- ���� ���ړ���^����? ����
+ ☆★ Give lateral movement? ★☆
 
- ���ړ��L�[���������ςȂ��ɂ����Ƃ��A���ړ���^����u�Ԃ��𔻒f���ĕԂ��܂��B�����n�߂��u
- �Ԃ�K��̃��s�[�g�Ԋu�� true ��Ԃ��܂��B
+ When you hold down a horizontal movement key, this function returns the moment when the horizontal movement is to be performed.
+ Returns true between each occurrence of the specified repeat interval.
+
 ----------------------------------------------------------------------------------------*/
 function InputsHorizontalMove(toRight){
   keyName = toRight ? KeyR() : KeyL();
-  if(PressedDuration(keyName) < HORIZONTAL_CHARGE_DURATION) return IsPressed(keyName);
-  return (PressedDuration(keyName) - HORIZONTAL_CHARGE_DURATION) % HORIZONTAL_REPEAT_SPAN == 0;
+  if(PressedDuration(keyName) < HORIZONTAL_CHARGE_DURATION) return IsPressed(keyName) ? 0 : 1;
+  if (HORIZONTAL_REPEAT_SPAN == 0) {
+    return 2;
+  }
+  return (PressedDuration(keyName) - HORIZONTAL_CHARGE_DURATION) % HORIZONTAL_REPEAT_SPAN == 0 ? 0 : 1;
 }
 /*----------------------------------------------------------------------------------------
- ���� �\�t�g�h���b�v���s? ����
+ ☆★ Soft drop execution? ★☆
 
- �������u�ԂƁA�ȍ~�\�t�g�h���b�v�Ԋu���o�߂���x�� true ��Ԃ��܂��B
+ Returns true when pressed and each time the soft drop interval has elapsed thereafter.
 ----------------------------------------------------------------------------------------*/
 function InputsSoftDrop(){
   if(IsPressed(KeySD())) return true;
@@ -542,12 +559,12 @@ function InputsSoftDrop(){
   return PressedDuration(KeySD()) % SOFT_DROP_SPAN == 0;
 }
 /*----------------------------------------------------------------------------------------
- ���� ���������C��������Ώ����\�񂷂� ����
+ ☆★ If there are complete lines, reserve for deletion ★☆
 
- �B�������Z ID ��z��ɂ��ĕԂ��܂��B
+ Returns an array of completed skill IDs.
 ----------------------------------------------------------------------------------------*/
 function EraseLine(){
-  // ���������C���̌���
+  // Check for aligned lines
   var eraseLines = [];
   var lineErases;
   for(var i = 0; i < MATRIX_HEIGHT; i++){
@@ -560,15 +577,15 @@ function EraseLine(){
     }
     if(lineErases){
       eraseLines.push(i);
-      // ���C���폜�\��
+      // Reservation for line deletion
       ReserveCutLine(i);
     }
   }
   var numEls = eraseLines.length;
-  // REN ���Ǘ�
+  // REN number management
   if(numEls == 0) gRens = -1;
   else gRens++;
-  // �B�������Z ID �̔z����쐬
+  // Create an array of completed skill IDs
   var features = [];
   switch(numEls){
   case 0:
@@ -584,14 +601,14 @@ function EraseLine(){
     if(gIsReadyToB2b && (numEls >= 4 || gTSpinType > 0)) features.push(11);
     if(IsEmptyMatrix()) features.push(10);
   }
-  // B2B �t���O�Ǘ�
+  // B2B flag management
   if(numEls >= 1) gIsReadyToB2b = (numEls >= 4 || (gTSpinType > 0 && numEls >= 1));
 
   return features;
 }
 
 /*----------------------------------------------------------------------------------------
- ���� �}�g���b�N�X�͋�? ����
+ ☆★ Is the Matrix empty? ★☆
 ----------------------------------------------------------------------------------------*/
 function IsEmptyMatrix(){
   for(var i = 0; i < MATRIX_HEIGHT; i++){
@@ -602,9 +619,9 @@ function IsEmptyMatrix(){
   return true;
 }
 /*----------------------------------------------------------------------------------------
- ���� ���C�������\�� ����
+ ☆★ Line deletion reservation ★☆
 
- <line>�s�ڂɂ���u���b�N���폜�\�񂵂܂��B������ RemoveReservedLines() �ō폜����܂��B
+ Reserves the block at line <line> for deletion. These will be removed with RemoveReservedLines().
 ----------------------------------------------------------------------------------------*/
 function ReserveCutLine(line){
   for(var i = 0; i < MATRIX_WIDTH; i++){
@@ -613,9 +630,9 @@ function ReserveCutLine(line){
   gLineClearCount = LINE_CLEAR_DURATION;
 }
 /*----------------------------------------------------------------------------------------
- ���� �����\��ς̃��C������ ����
+ ☆★ Delete lines reserved for deletion ★☆
 
- �����\��ς̃u���b�N���������A�ł�����Ԃ��ォ��l�߂܂��B
+ Erases blocks that are reserved for erasure and fills the space from the top.
 ----------------------------------------------------------------------------------------*/
 function RemoveReservedLines(){
   for(var i = 0; i < MATRIX_HEIGHT; i++){
@@ -630,9 +647,9 @@ function RemoveReservedLines(){
   }
 }
 /*----------------------------------------------------------------------------------------
- ���� �Z���擾 ����
+ ☆★ Skill name acquisition ★☆
 
- �����̋Z��B�������ꍇ�A�܂Ƃ߂� 1 �̕�����ɂ��ĕԂ��܂��B
+ If multiple tricks are accomplished, they will be returned as a single string.
 ----------------------------------------------------------------------------------------*/
 function FeatureName(features){
   var result = "☆ ";
@@ -658,16 +675,16 @@ function FeatureName(features){
   return result;
 }
 /*----------------------------------------------------------------------------------------
- ���� �ڒn��? ����
+ ☆★ Grounding? ★☆
 ----------------------------------------------------------------------------------------*/
 function IsLanding(){
   return !PlaceTest(gCurDir, gCurMino, gCurX, gCurY + 1);
 }
 /*----------------------------------------------------------------------------------------
- ���� ���n ����
+ ☆★ Landing ★☆
 ----------------------------------------------------------------------------------------*/
 function Land(){
-  // �t�B�[���h�ɔ��f
+  // Reflected in the field
   for(var i = 0; i < 4; i++){
     for(var j = 0; j < 4; j++){
       if(IsValidPos(j + gCurX, i + gCurY)){
@@ -677,7 +694,7 @@ function Land(){
       }
     }
   }
-  // �����ȃK�C�h�Ȃ�]��Ȃ��Ǝ��s��
+  // If you don't follow the strict guide, you'll fail.
   if(gCurGuide){
     if((gCurProblem.useGuide || gCurUseGuideFlg) && GuideBlocksPos().join() != CurMinoBlocksPos().join()){
       gScene = 'perform_failed';
@@ -685,29 +702,29 @@ function Land(){
       return;
     }
   }
-  // ���b�N�A�E�g����
+  // Lockout check
   if(LandsToLockout()){
     Lockout();
     return;
   }
-  // �Z���������Ă���Ε\������я���
+  // If the skill is activated, display and process it.
   var features = EraseLine();
   if(features.length > 0){
-    // �\���Ǘ�
+    // Indicates management
     Say('perform_caption', FeatureName(features));
     gDfCount = DISPLAY_FEATURES_DURATION;
-    // �m���}�֔��f
+    // Reflected in quota
     RemoveReq(features);
-    // ���C���������Ă���΃��C������
+    // If the lines are aligned, erase the lines.
     if(IsErased(features)) gLineClearCount = LINE_CLEAR_DURATION;
   }
-  // �A�N�e�B�u�~�m����
+  // Release active mino
   gCurMino = null;
 }
 /*----------------------------------------------------------------------------------------
- ���� ���n�������ʁA���b�N�A�E�g? ����
+ ★☆Locked out after landing? ☆★
 
- �~�m�̑S�u���b�N���f�b�h���C������ɂȂ����ꍇ�� true ��Ԃ��܂��B
+ Returns true if all blocks of mino are above their deadline.
 ----------------------------------------------------------------------------------------*/
 function LandsToLockout(){
   var minoPos = MinoToBlockPositions(gCurDir, gCurMino, gCurX, gCurY);
@@ -717,23 +734,23 @@ function LandsToLockout(){
   return true;
 }
 /*----------------------------------------------------------------------------------------
- ���� �~�m���o���������ʁA���b�N�A�E�g? ����
+ ★☆ Lockout due to Mino's appearance? ☆★
 
- �~�m�̃u���b�N�Ɗ����̃u���b�N�̈ʒu�� 1 �ł��d�������� true ��Ԃ��܂��B
+ Returns true if the block overlaps with any existing block position.
 ----------------------------------------------------------------------------------------*/
 function AppearsToLockout(){
   if(!gCurMino) return;
   return !PlaceTest(INITIAL_DIR, gCurMino, INITIAL_X, INITIAL_Y);
 }
 /*----------------------------------------------------------------------------------------
- ���� ���b�N�A�E�g������ ����
+ ★☆ Lockout processing ☆★
 ----------------------------------------------------------------------------------------*/
 function Lockout(){
   gScene = 'perform_failed';
   gCurMino = null;
 }
 /*----------------------------------------------------------------------------------------
- ���� ���C����������? ����
+ ☆★ Did you delete the line? ★☆
 ----------------------------------------------------------------------------------------*/
 function IsErased(features){
   for(var i = 0; i < features.length; i++){
@@ -754,7 +771,7 @@ function IsErased(features){
   return false;
 }
 /*----------------------------------------------------------------------------------------
- ���� �K�C�h�̃u���b�N��������W�̈ꗗ���擾 ����
+ ☆★ Get a list of coordinates where guide blocks are located ★☆
 ----------------------------------------------------------------------------------------*/
 function GuideBlocksPos(){
   var g = gCurGuide;
@@ -762,15 +779,15 @@ function GuideBlocksPos(){
   return MinoToBlockPositions(g.dir, g.mino, g.x, g.y + DEADLINE_HEIGHT);
 }
 /*----------------------------------------------------------------------------------------
- ���� ���쒆�̃~�m�̃u���b�N��������W�̈ꗗ���擾 ����
+ ☆★ Get a list of coordinates where the block you are controlling is located ★☆
 ----------------------------------------------------------------------------------------*/
 function CurMinoBlocksPos(){
   return MinoToBlockPositions(gCurDir, gCurMino, gCurX, gCurY);
 }
 /*----------------------------------------------------------------------------------------
- ���� �w��ʒu�Ƀ~�m��u�����Ƃ��̃u���b�N�̍��W�̈ꗗ���擾 ����
+ ☆★ Get a list of block coordinates when placing a mino in a specified position ★☆
 
- �傫�� 2 �̔z�� [ x ���W, y ���W] �̈ꗗ������ɔz��ɂ��ĕԂ��܂�(������ 2 �����z��)�B
+ Returns a list of arrays of size 2 [ x coordinate, y coordinate] as an array (effectively a 2-dimensional array).
 ----------------------------------------------------------------------------------------*/
 function MinoToBlockPositions(dir, mino, x, y){
   var result = [];
@@ -782,18 +799,18 @@ function MinoToBlockPositions(dir, mino, x, y){
   return result;
 }
 /*----------------------------------------------------------------------------------------
- ���� �n�[�h�h���b�v������� Y ���ǂꂾ������( DIFFerence of Y )���邩���擾 ����
+ ☆★ Get the amount of increase in Y (DIFFerence of Y) when a hard drop is performed ★☆
 ----------------------------------------------------------------------------------------*/
 function HarddropDiffY(){
   var i = 0;
   while(PlaceTest(gCurDir, gCurMino, gCurX, gCurY + i)){
     i++;
   }
-  // �ʉߕs�\�ɂȂ钼�O�̓_�܂ł̑����ʂ�Ԃ�
+  // Returns the increment to the point just before it becomes impassable
   return i - 1;
 }
 /*----------------------------------------------------------------------------------------
- ���� �n�[�h�h���b�v ����
+ ☆★ Hard Drop ★☆
 ----------------------------------------------------------------------------------------*/
 function HardDrop(){
   var dY = HarddropDiffY();
@@ -803,7 +820,7 @@ function HardDrop(){
   gLandingCount = 0;
 }
 /*----------------------------------------------------------------------------------------
- ���� �\�t�g�h���b�v ����
+ ☆★ Soft Drop ★☆
 ----------------------------------------------------------------------------------------*/
 function SoftDrop(){
   while(!IsLanding()){
@@ -813,7 +830,7 @@ function SoftDrop(){
   }
 }
 /*----------------------------------------------------------------------------------------
- ���� �z�[���h ����
+ ☆★ Hold ★☆
 ----------------------------------------------------------------------------------------*/
 function Hold(){
   if(gQueue.length == 0 && !gCurHold) return;
@@ -835,14 +852,14 @@ function Hold(){
 
 }
 /*----------------------------------------------------------------------------------------
- ���� �B�������Z�ɉ����ăm���}( REQuired features )�����炷 ����
+ ☆★ Reduce the quota (REQuired features) according to the skills achieved ★☆
 ----------------------------------------------------------------------------------------*/
 function RemoveReq(features){
   var index;
   for(var i = 0; i < features.length; i++){
     index = (features[i] > 100) ? 12 : features[i];
     gCurProblemReq[index]--;
-    // T �X�s���Ȃ�ʏ�̏������̃m���}�����炷�B���Ƃ��� TST �Ȃ�g���v���̃m���}�����炷
+    // If you use T spin, the quota for normal erasure will also be reduced. For example, if you use TST, the quota for triple erasure will also be reduced.
     switch(index){
     case 6:
     case 7:
@@ -858,7 +875,7 @@ function RemoveReq(features){
   }
 }
 /*----------------------------------------------------------------------------------------
- ���� �m���}�N���A? ����
+ ☆★ Did you meet the quota? ★☆
 ----------------------------------------------------------------------------------------*/
 function ReqIsCleared(){
   for(var i = 0; i < gCurProblemReq.length; i++){
@@ -867,7 +884,7 @@ function ReqIsCleared(){
   return true;
 }
 /*----------------------------------------------------------------------------------------
- ���� �w����W�Ƀ~�m��u����? ����
+ ☆★ Can you place a mino at the specified coordinates? ★☆
 ----------------------------------------------------------------------------------------*/
 function PlaceTest(dir, mino, x, y){
   var block;
@@ -877,7 +894,7 @@ function PlaceTest(dir, mino, x, y){
         block = gBlocks[gMatrix[y + i][x + j]];
         if(mino.shape[dir][i][j] == 1 && !block.passable) return false;
       }else{
-        // �����ȏꏊ�Ńf�b�h���C������ȊO�Ȃ�u���Ȃ�
+        // Invalid location, cannot be placed unless above deadline
         if(mino.shape[dir][i][j] == 1 &&
                 (x + j < 0 || MATRIX_WIDTH <= x + j || MATRIX_HEIGHT <= y + i)){
           return false;
@@ -888,16 +905,16 @@ function PlaceTest(dir, mino, x, y){
   return true;
 }
 /*----------------------------------------------------------------------------------------
- ���� �w����W�͔z��͈͓̔�? ����
+ ☆★ Are the specified coordinates within the array range? ★☆
 ----------------------------------------------------------------------------------------*/
 function IsValidPos(x, y){
   return (0 <= x && x < MATRIX_WIDTH && 0 <= y && y < MATRIX_HEIGHT);
 }
 /*----------------------------------------------------------------------------------------
- ���� ��ʏ�Ƀ~�m��`�� ����
+ ☆★ Draw mino on the screen ★☆
 ----------------------------------------------------------------------------------------*/
 function DisplayMino(dir, mino, x, y, blockId){
-  var block;  // 0=��, 1=����
+  var block;  // 0=empty, 1=available
 
   for(var i = 0; i < 4; i++){
     for(var j = 0; j < 4; j++){
@@ -906,10 +923,10 @@ function DisplayMino(dir, mino, x, y, blockId){
   }
 }
 /*----------------------------------------------------------------------------------------
- ���� �u���b�N�̕`�� ����
+ ☆★ Block drawing ★☆
 
- �}�g���b�N�X��̍��W(<x>, <y>)�� ID ��<blockId>�̃u���b�N��`�悵�܂��B <ignoresZero>��
- true ���w�肷��ƁAID �� 0 �̃u���b�N��`�悵�܂���(�����Ƃ��Ĉ���)�B
+ Draws a block with ID <blockId> at coordinates (<x>, <y>) on the matrix.
+ If you specify true, blocks with an ID of 0 will not be drawn (they will be treated as transparent).
 ----------------------------------------------------------------------------------------*/
 function DisplayBlock(x, y, blockId, ignoresZero){
   if(ignoresZero && blockId == 0) return;
@@ -918,7 +935,7 @@ function DisplayBlock(x, y, blockId, ignoresZero){
   }
 }
 /*----------------------------------------------------------------------------------------
- ���� �ʍs��? ����
+ ☆★ Is it possible to pass? ★☆
 ----------------------------------------------------------------------------------------*/
 function IsPassable(x, y){
   if(x < 0 || MATRIX_WIDTH <= x || MATRIX_HEIGHT <= y) return false;
@@ -926,38 +943,34 @@ function IsPassable(x, y){
   return gBlocks[gMatrix[y][x]].passable;
 }
 /*----------------------------------------------------------------------------------------
- ���� �\������? ����
+ ☆★ means within the area? ★☆
 ----------------------------------------------------------------------------------------*/
 function CanDisplayPos(x, y){
   return (0 <= x && x < MATRIX_WIDTH && DEADLINE_HEIGHT <= y && y < MATRIX_HEIGHT);
 }
 /*----------------------------------------------------------------------------------------
- ���� �E��] ����
+ ☆★ Right rotation ★☆
 ----------------------------------------------------------------------------------------*/
 function RotateRight(){
   Rotate(true);
 }
 /*----------------------------------------------------------------------------------------
- ���� ����] ����
+ ☆★ Left rotation ★☆
 ----------------------------------------------------------------------------------------*/
 function RotateLeft(){
   Rotate(false);
 }
-function Rotate180() {
-    RotateRight();
-    RotateRight();
-}
 /*----------------------------------------------------------------------------------------
- ���� ��] ����
+ ☆★ Rotation ★☆
 
- <toRight>�� true �Ȃ�E��]�Afalse �Ȃ獶��]�����܂��B
+ If <toRight> is true, it rotates right; if it is false, it rotates left.
 ----------------------------------------------------------------------------------------*/
 function Rotate(toRight){
   var newDir = (gCurDir + (toRight ? 1 : 3)) % 4;
   var rotRule = gCurMino.rotationRule;
   var newX, newY;
   var rotateRuleId;
-  // ��]���[���̃e�X�g�B���������甽�f
+  // Test the rotation rules. If successful, apply them.
   var canRotate = false;
   for(var i = 0; i < ROTATE_RULES; i++){
     newX = gCurX + rotRule.dx[toRight ? 0 : 1][gCurDir][i];
@@ -976,29 +989,55 @@ function Rotate(toRight){
     if(IsLanding()) gNdCount = NATURAL_DROP_SPAN;
   }
 }
+
+function Rotate180(){
+  var newDir = (gCurDir + 2) % 4;
+  var rotRule = gCurMino.rotationRule;
+  var newX, newY;
+  var rotateRuleId;
+  // Test the rotation rules. If successful, apply them.
+  var canRotate = false;
+  for(var i = 0; i < ROTATE_RULES; i++){
+    newX = gCurX - rotRule.dx[2][gCurDir][i];
+    newY = gCurY - rotRule.dy[2][gCurDir][i];
+    if(PlaceTest(newDir, gCurMino, newX, newY)){
+      gCurX = newX;
+      gCurY = newY;
+      gCurDir = newDir;
+      canRotate = true;
+      rotateRuleId = i;
+      break;
+    }
+  }
+  if(canRotate){
+    SetTSpinType(i);
+    if(IsLanding()) gNdCount = NATURAL_DROP_SPAN;
+  }
+}
+
 /*----------------------------------------------------------------------------------------
- ���� T-SPIN �������� ����
+ ★☆ T-SPIN established ☆★
 
- T-SPIN �s�����Ȃ� 0�AT-SPIN MINI �Ȃ� 1�AT-SPIN �Ȃ� 2 ��Ԃ��܂��B
+ Returns 0 if T-SPIN is not established, 1 if T-SPIN MINI, and 2 if T-SPIN.
 //----------------------------------------------------------------------------------------
- ��]�����̒��Ŏ擾���Ă��������B
- ���̏����𖞂����� T-SPIN �ɂȂ�܂��B
- �E T �~�m�ł��邱��
- �E�Ō�ɐ����������삪��]�ł���(���̊֐����Ăяo���O��)
- �E�ʕ��̎��� 4 �u���b�N( �� �� �~ �̕���)�̂��� 3 �ӏ��ȏ�Ƀu���b�N������
+ Please obtain it during the rotation process.
+ If the following conditions are met, it will be T-SPIN.
+ ・ T Minho
+ - The last successful operation was a rotation (assuming this function is called)
+ - There are blocks in three or more of the four blocks (marked with * and ×) surrounding the convex part
 
- ����Ɏ��̏����̂ǂ��炩�𖞂����� T-SPIN �ɁA�������Ȃ��� T-SPIN MINI �ɂȂ�܂��B
- �E�ʕ��̗���( �� �̕���)�� 2 �ӏ��Ƃ��u���b�N������
- �E���O�̉�]���� 5 ���( TST ���̉�]�A�u T-SPIN FIN �v��)�ł���
+ Furthermore, if either of the following conditions is met, it becomes a T-SPIN; if not, it becomes a T-SPIN MINI.
+ ・There are blocks on both sides of the convex part (parts marked with *)
+ - The previous rotation is the fifth candidate (TST-style rotation, "T-SPIN FIN", etc.)
 
- �������@�~�����@�~�@�~�@�����~
- �������@�@�����@�������@����
- �~�@�~�@�~�����@�������@�����~
+ ※■※　×■※　×　×　※■×
+ ■■■　　■■　■■■　■■
+ ×　×　×■※　※■※　※■×
 
- ��]�ȊO�̑��삪���������Ƃ��� T-SPIN �t���O gTSpinType �� 0 �ɂ��Ă��������B
+ If an operation other than rotation is successful, set the T-SPIN flag gTSpinType to 0.
 //----------------------------------------------------------------------------------------
- �ׂ��������̓\�t�g�ɂ���ĈقȂ�悤�ł��B�Ƃ肠�����A�ǏR��⊊�荞�݂� T-SPIN �� MINI
- �Ɣ��肳��Ă���Ηǂ��Ǝv���܂��B
+ The detailed conditions seem to vary depending on the software. For now, the wall kick and sliding T-SPIN are the MINI
+ I think it would be good if it was judged as such.
 ----------------------------------------------------------------------------------------*/
 function SetTSpinType(rotateRuleId){
   if(gCurMino != T) return 0;
@@ -1006,7 +1045,7 @@ function SetTSpinType(rotateRuleId){
   var tsCnt = 0;
   var tssCnt = 0;
   var isBlock = false;
-  // TS ��������� TSS �����̉��ӏ��ɒʍs�s�u���b�N�����邩
+  // How many TS and TSS condition impassable blocks are there?
   for(var i = 0; i < T.shape[gCurDir].length; i++){
     for(var j = 0; j < T.shape[gCurDir][i].length; j++){
       if(IsValidPos(j + gCurX, i + gCurY)){
@@ -1020,7 +1059,7 @@ function SetTSpinType(rotateRuleId){
       }
     }
   }
-  // TSS �� TSM ���̔���
+  // Determine whether it is TSS or TSM
   if(tsCnt >= 3){
     gTSpinType = (tssCnt >= 2 || rotateRuleId == 4) ? 2 : 1;
   }else{
@@ -1028,7 +1067,7 @@ function SetTSpinType(rotateRuleId){
   }
 }
 /*----------------------------------------------------------------------------------------
- ���� �\���𔽉f ����
+ ☆★ Reflect display ★☆
 ----------------------------------------------------------------------------------------*/
 function Refresh(){
   RefreshMatrix();
@@ -1036,7 +1075,7 @@ function Refresh(){
   RefreshHold();
 }
 /*----------------------------------------------------------------------------------------
- ���� �}�g���b�N�X���f ����
+ ☆★ Matrix Reflection ★☆
 ----------------------------------------------------------------------------------------*/
 function RefreshMatrix(){
   RefreshPlacedMino();
@@ -1044,7 +1083,7 @@ function RefreshMatrix(){
   RefreshActiveMino();
 }
 /*----------------------------------------------------------------------------------------
- ���� �ݒu�σu���b�N���f ����
+ ☆★ Reflection of installed blocks ★☆
 ----------------------------------------------------------------------------------------*/
 function RefreshPlacedMino(){
   for(var i = DEADLINE_HEIGHT; i < MATRIX_HEIGHT; i++){
@@ -1054,18 +1093,18 @@ function RefreshPlacedMino(){
   }
 }
 /*----------------------------------------------------------------------------------------
- ���� �������~�m���f ����
+ ☆★ Reflects falling mino ★☆
 ----------------------------------------------------------------------------------------*/
 function RefreshActiveMino(){
   if(gCurMino) DisplayMino(gCurDir, gCurMino, gCurX, gCurY, gCurMino.activeBlockId);
 }
 /*----------------------------------------------------------------------------------------
- ���� �S�[�X�g�~�m�ƃK�C�h�~�m���f ����
+ ☆★ Reflection of ghost mino and guide mino ★☆
 ----------------------------------------------------------------------------------------*/
 function RefreshGhostAndGuide(){
   if(!gCurMino) return;
   var ghostBlks = MinoToBlockPositions(gCurDir, gCurMino, gCurX, gCurY + HarddropDiffY());
-  // �S�[�X�g�~�m�̕`��
+  // Draw ghost minoes
   for(var i = 0; i < ghostBlks.length; i++){
     DisplayBlock(ghostBlks[i][0], ghostBlks[i][1], gCurMino.ghostBlockId, true);
   }
@@ -1073,7 +1112,7 @@ function RefreshGhostAndGuide(){
   var g = gCurGuide;
   if(!g) return;
   var guideBlks = MinoToBlockPositions(g.dir, g.mino, g.x, g.y + DEADLINE_HEIGHT);
-  // ���ʕ����̒T��
+  // Find intersection
   var ghostGuideBlks = [];
   for(var i = 0; i < ghostBlks.length; i++){
     for(var j = 0; j < guideBlks.length; j++){
@@ -1083,22 +1122,22 @@ function RefreshGhostAndGuide(){
     }
   }
 
-  // �K�C�h�~�m�̕`��
+  // Draw guide pieces
   if(gCurProblem.useGuide || gCurUseGuideFlg){
     for(var i = 0; i < guideBlks.length; i++){
       DisplayBlock(guideBlks[i][0], guideBlks[i][1], g.mino.guideBlockId, true);
     }
 
-    // ���ʕ����̕`��
+    // Draw the intersection
     for(var i = 0; i < ghostGuideBlks.length; i++){
       DisplayBlock(ghostGuideBlks[i][0], ghostGuideBlks[i][1], String(g.mino.ghostGuideBlockId) + String(gCurMino.id), true);
     }
   }
 }
 /*----------------------------------------------------------------------------------------
- ���� �l�N�X�g���f ����
+ ☆★ Next Reflection ★☆
 
- ��( 0 )���ړ����̃u���b�N( 11 �` 17 )�̉摜��\�����܂��B1 �}�X���ɂ��炵�܂��B
+ Displays an image of a blank space (0) or the block being moved (11 to 17). Shifts down one space.
 ----------------------------------------------------------------------------------------*/
 function RefreshQueue(){
   var mino;
@@ -1114,7 +1153,7 @@ function RefreshQueue(){
     }
     i++;
   }
-  // ��
+  // blank
   while(i < NEXT_MINOS){
     for(var j = 0; j < 4; j++){
       for(var k = 0; k < 4; k++){
@@ -1125,9 +1164,9 @@ function RefreshQueue(){
   }
 }
 /*----------------------------------------------------------------------------------------
- ���� �z�[���h���f ����
+ ☆★ Hold Reflection ★☆
 
- ��( 0 )���ړ����̃u���b�N( 11 �` 17 )�̉摜��\�����܂��B1 �}�X���ɂ��炵�܂��B
+ Displays an image of a blank space (0) or the block being moved (11 to 17). Shifts down one space.
 ----------------------------------------------------------------------------------------*/
 function RefreshHold(){
   var mino;
@@ -1141,7 +1180,7 @@ function RefreshHold(){
       }
     }
   }else{
-    // ��
+    // blank
     for(var j = 0; j < 4; j++){
       for(var k = 0; k < 4; k++){
         SetImage("h" + j + "_" + k, gBlocks[0].cache.src);
@@ -1151,7 +1190,7 @@ function RefreshHold(){
 
 }
 /*----------------------------------------------------------------------------------------
- ���� �V�[��: ���b�X�����s ����
+ ☆★ Scene: Lesson Failed ★☆
 ----------------------------------------------------------------------------------------*/
 function ScenePerformFailed(){
   switch(gButton){
@@ -1162,7 +1201,7 @@ function ScenePerformFailed(){
   if(IsPressed()) gScene = 'perform';
 }
 /*----------------------------------------------------------------------------------------
- ���� �V�[��: �K�C�h���[�h ����
+ ☆★ Scene: Guided Mode ★☆
 ----------------------------------------------------------------------------------------*/
 function ScenePerformGuideMode(){
   switch(gButton){
@@ -1173,7 +1212,7 @@ function ScenePerformGuideMode(){
   if(IsPressed()) gScene = 'perform';
 }
 /*----------------------------------------------------------------------------------------
- ���� �V�[��: �N���A ����
+ ☆★ Scene: Clear ★☆
 ----------------------------------------------------------------------------------------*/
 function ScenePerformCleared(){
   switch(gButton){
@@ -1184,15 +1223,15 @@ function ScenePerformCleared(){
   if(IsPressed()) AfterClear();
 }
 /*----------------------------------------------------------------------------------------
- ���� �N���A��̃L�[���� ����
+ ☆★ Key operations after clearing ★☆
 
- �u���10�v�Ȃ�΃Z�N�V�����ꗗ�ցA����ȊO�Ȃ玟�̖��ɐi�݂܂��B
+ If it is "Question 10", go to the section list; otherwise, proceed to the next question.
 ----------------------------------------------------------------------------------------*/
 function AfterClear(){
   if(gCurProblemId >= gCurProgmeIdList.length - 1){
     gScene = 'select_section';
     gProblemsCleared[gCurSectionId] = true;
-    Save('Prg' + curSectionId, '1');
+    Save('Prg' + gCurSectionId, '1');
   }
   else{
     gCurProblemId++;
@@ -1200,7 +1239,7 @@ function AfterClear(){
   }
 }
 /*----------------------------------------------------------------------------------------
- ���� �e�L�[���̎擾 ����
+ ☆★ Get each key name ★☆
 ----------------------------------------------------------------------------------------*/
 function KeyL() {return gKeys[0]; }  // move Left
 function KeyR() {return gKeys[1]; }  // move Right
@@ -1212,7 +1251,7 @@ function KeyH() {return gKeys[6]; }  // Hold
 function KeyG() { return gKeys[7]; }  // Guide
 function KeyR180() { return gKeys[8];}
 /*----------------------------------------------------------------------------------------
- ���� �V�[��: �ݒ� ����
+ ☆★ Scene: Setting ★☆
 ----------------------------------------------------------------------------------------*/
 function ScenePreferences(){
   switch(gButton){
@@ -1225,21 +1264,21 @@ function ScenePreferences(){
   }
 }
 /*----------------------------------------------------------------------------------------
- ���� �ݒ�̕ۑ� ����
+ ☆★ Save settings ★☆
 
- �ۑ��������������ǂ�����Ԃ��܂��B
+ Returns whether the save was successful.
 ----------------------------------------------------------------------------------------*/
 function SavePreferences(){
-  // �d���s��
+  // Cannot be repeated
   if(KeyDuplicates()){
     alert("Duplicate Key Detected");
     return false;
   }
-  // �ݒ蔽�f
+  // Setting reflection
   for(var i = 0; i < gKeys.length; i++){
     gKeys[i] = document.getElementById(gSelectForms[i]).value;
   }
-  // �N�b�L�[�ɕۑ�
+  // Save in a cookie
   Save('MoveLeft', gKeys[0]);
   Save('MoveRight', gKeys[1]);
   Save('SoftDrop', gKeys[2]);
@@ -1252,9 +1291,9 @@ function SavePreferences(){
   return true;
 }
 /*----------------------------------------------------------------------------------------
- ���� �L�[���d��? ����
+ ☆★ Duplicate key? ★☆
 
- �e�Z���N�g�{�b�N�X���m�F���āA�d�������邩�ǂ����𔻒肵�ĕԂ��܂��B
+ Checks each select box to determine if there are any duplicates and returns them.
 ----------------------------------------------------------------------------------------*/
 function KeyDuplicates(){
   var target1, target2;

@@ -1,161 +1,161 @@
 /*========================================================================================
- ���� jsgmod.js (JavaScript Game MODule) ����
+ □■ jsgmod.js (JavaScript Game MODule) ■□
  
- �t���[���Ǘ���L�[���͓����x�����郂�W���[���ł��B
+ This module supports frame management, key input, etc.
 ==========================================================================================
 /*----------------------------------------------------------------------------------------
- ���� �萔�ꗗ ����
+ ☆★ List of constants ★☆
 ----------------------------------------------------------------------------------------*/
-var FPS = 30;            // Frames Per Second; 1 �b�Ԃ̃t���[����
-var LOOP_INTERVAL = 17;  // <�~���b> ���C�����[�v�N���Ԋu�B(1000 / <FPS>) ��菬��������
-var KEY_CHARGE_DURATION = 7;  // <�t���[��> �L�[���s�[�g�J�n�܂ł̃t���[����
-var KEY_REPEAT_SPAN = 2;      // <�t���[��> ���̃L�[���s�[�g�܂ł̃t���[����
+var FPS = 30; // Frames Per Second; Number of frames per second
+var LOOP_INTERVAL = 17; // <milliseconds> Main loop start interval. Must be less than (1000 / <FPS>)
+var KEY_CHARGE_DURATION = 7; // <frames> Number of frames before key repeat begins
+var KEY_REPEAT_SPAN = 2; // <frames> Number of frames until next key repeat
 /*
-�� �L�[���s�[�g
- �L�[������������ƃL�[���A���œ��͂���邱�Ƃ��u�L�[���s�[�g�v�Ƃ����܂��B���Ƃ���
- KEY_CHARGE_DURATION = 20, KEY_REPEAT_SPAN = 4 �Ƃ���΁A�L�[�������n�߂��t���[���ƁA����
- ���琔���� 20, 24, 28, 32, �c �t���[���̊ԉ����������Ƃ��ɓ��͂𑗂�( IsInputting �� true
- ��Ԃ�)�悤�ɂȂ�܂��B
+● Key Repeat
+ When you hold down a key, the key is input continuously. This is called "key repeat." For example,
+ If you set KEY_CHARGE_DURATION = 20, KEY_REPEAT_SPAN = 4, the frame where you start pressing the key and the frame where you press the key will be
+ Sends input when pressed for frames 20, 24, 28, 32, … (when IsInputting is true)
+ (returns
 */
 /*----------------------------------------------------------------------------------------
- ���� �g���� ����
+ ☆★How to use★☆
 
- Javascript �Ńt���[��������s�����W���[���ł��B�{���W���[���̓ǂݍ��݌��� Setup() (�N����
- �� 1 �񂾂���������鏉��������)�� Main() (���t���[�����s����鏈��)���`���Ă��������B
- �܂��Abody �^�O�� onLoad �C�x���g���� Execute() ���Ăяo���Ă��������B
+ This is a module that controls frames using Javascript. This module is loaded from Setup() (at startup).
+ Please define Main() (initialization process that is executed only once) and Main() (process that is executed every frame).
+ Also, call Execute() from the body tag's onLoad event.
 
-�� HTML �t�@�C���̃\�[�X�̗�
+Example of HTML file source
  <html>
   <head>
    <script type="text/javascript" src="jsgmod.js"></script>
    <script type="text/javascript" src="my_sccript.js"></script>
   </head>
   <body onLoad="Execute()">
-   �{��
+   This article
   </body>
  </html>
 
 ------------------------------------------------------------------------------------------
-�� �L�[����
- PressedDuration(keyName)         �L�[�����t���[��������Ă��邩
- IsPressed(keyName)               �L�[�͓��͊J�n���?
- IsHolded(keyName)                �L�[��������Ă���?
- IsInputting(keyName)             �L�[�͓��͂�^���Ă���?
+● Key Control
+ PressedDuration(keyName)    How many frames the key has been pressed
+ IsPressed(keyName) Is the key pressed?
+ IsHolded(keyName) Is the key held down?
+ IsInputting(keyName) Is the key providing input?
 
-�� �X�N���v�g�쐬�E�f�o�b�O
- p(value, variableName)             �R���\�[���ɕ\��
- InitArg(variable, defaultValue)    ��`�ς̒l���f�t�H���g�l���擾
+● Script creation and debugging
+ p(value, variableName) Display in console
+ InitArg(variable, defaultValue) Gets the defined or default value.
 
-�� �\��
- Say(textBoxName, text)           �e�L�X�g�̕\��
- SetImage(imageId, src)           �摜�̕\��
+● Indicates
+ Say(textBoxName, text) Display text
+ SetImage(imageId, src) Display an image
 
-�� ����
- EHour()                          �o�ߎ��Ԃ́u���ԁv���擾
- EMin()                           �o�ߎ��Ԃ́u���v���擾
- ESec()                           �o�ߎ��Ԃ́u�b�v���擾
- EMSec()                          �o�ߎ��Ԃ́u�~���b�v���擾
- ETime()                          �o�ߎ��Ԃ���b���Ŏ擾
+● time
+ EHour() Get the elapsed time "hour"
+ EMin() Gets the elapsed minute
+ ESec() Gets the elapsed time in seconds
+ EMSec() Gets the elapsed time in milliseconds
+ ETime() Gets the elapsed time in seconds
  EtStr(hLength=2, hDelim=':', mDelim=':', sDelim='', msLength=0)
-                                  �o�ߎ��Ԃ𕶎���ɕϊ����Ď擾
+                                  Convert the elapsed time into a string and get it
 
-�� ���l����
- Round(n, place=0)                �����_�̎w��ʂŎl�̌ܓ�
- Floor(n, place=0)                �����_�̎w��ʂŐ؂�̂�
- Ceil(n, place=0)                 �����_�̎w��ʂŐ؂�グ
- Justify(n)                       �ۂߌ덷�̏C��
- Rand(n=0, times=0)               �����̐���
+● Numerical processing
+ Round(n, place=0) Rounds to the specified decimal point
+ Floor(n, place=0) Truncates to the specified decimal place
+ Ceil(n, place=0) Rounds up to the specified decimal point
+ Justify(n) Corrects rounding errors
+ Rand(n=0, times=0) Random number generator
 
-�� �N�b�L�[
- Save(name, value, expireDays)    �N�b�L�[�փZ�[�u
- Load(name)                       �N�b�L�[���烍�[�h
+Cookies
+ Save(name, value, expireDays) Save to cookie
+ Load(name) Load from cookie
 
-�� �N��
- Execute()                        �N��( body �^�O�� onLoad �C�x���g����Ăяo���Ă�������)
+● Start
+ Call Execute() (call it from the onLoad event of the body tag)
 
-�� �I�u�W�F�N�g
- Layer                            ���C���[
-   Show()                           �\��
-   Hide()                           �B��
-   MoveTo(x, y)                     �w��ʒu�Ɉړ�
-   MoveBy(dX, dY)                   �w��ʂ����ړ�
-   ResizeTo(width, height)          �T�C�Y�ύX
-   ResizeBy(dWidth, dHeight)        ���Βl���w�肵�ăT�C�Y�ύX
-   Write(text, overwrites=true)     �e�L�X�g( HTML �\�[�X)�̋L��
+● Objects
+ Layer
+   Show() means
+   Hide() Hide
+   MoveTo(x, y) Move to the specified position
+   MoveBy(dX, dY) Move by a specified amount
+   ResizeTo(width, height) Resize
+   ResizeBy(dWidth, dHeight) Resize by specifying relative values
+   Write(text, overwrites=true) Write text (HTML source)
 
 ========================================================================================*/
 /*----------------------------------------------------------------------------------------
- ���� �O���[�o���ϐ��ꗗ ����
+ ☆★ List of global variables ★☆
 
- �֋X��S���J�ϐ��ƂȂ��Ă��܂����A���̃��W���[���O����͒l��ύX���Ȃ��ł��������B
+ For convenience, these variables are publicly accessible, but their values ​​should not be changed outside of this module.
 ----------------------------------------------------------------------------------------*/
-var gTimer;         // ���C�����[�v�̐���p�^�C�}�[
-var gStartTime;     // �J�n����
-var gFrames;        // �o�߃t���[����
-var gInputs;        // [�`255] �e�L�[�����������Ă���t���[����
-var gConsole;       // �R���\�[���E�B���h�E
+var gTimer; // Timer for controlling the main loop
+var gStartTime;     // 開始時刻
+var gFrames; // Number of frames passed
+var gInputs; // [~255] The number of frames each key is held down
+var gConsole; // Console window
 /*----------------------------------------------------------------------------------------
- ���� �L�[�������̏��� ����
+ ☆★ Key press processing ★☆
 ----------------------------------------------------------------------------------------*/
 document.onkeydown = function(e){
   // Mozilla, Opera
   if(e != null){
     keyCode = e.which;
-    // �C�x���g���s��h��
+    // Prevent the event from firing
     e.preventDefault();
     e.stopPropagation();
   // Internet Explorer
   } else {
     keyCode = event.keyCode;
-    // �C�x���g���s��h��
+    // Prevent the event from firing
     event.returnValue = false;
     event.cancelBubble = true;
   }
-  //�u�L�[�������n�߂��v���Ƃ̔��f
+  // Reflects "start of pressing a key"
   if(gInputs[keyCode] <= 0) gInputs[keyCode] = 0;
 }
 /*----------------------------------------------------------------------------------------
- ���� �L�[�𗣂������̏��� ����
+ ☆★ Processing when key is released ★☆
 ----------------------------------------------------------------------------------------*/
 document.onkeyup = function(e){
   // Mozilla, Opera
   if(e != null){
     keyCode = e.which;
-    // �C�x���g���s��h��
+    // Prevent the event from firing
     e.preventDefault();
     e.stopPropagation();
   // Internet Explorer
   } else {
     keyCode = event.keyCode;
-    // �C�x���g���s��h��
+    // Prevent the event from firing
     event.returnValue = false;
     event.cancelBubble = true;
   }
-  //�u�L�[�𗣂����v���Ƃ̔��f
+  // Reflection of "key released"
   gInputs[keyCode] = -1;
 }
 /*----------------------------------------------------------------------------------------
- ���� �E�B���h�E���t�H�[�J�X�����������̏��� ����
+ ☆★ What to do when a window loses focus ★☆
 
- �L�[���͂��������܂�( onkeyup �C�x���g���������Ȃ��Ȃ邽��)�B
+ Clears the keystrokes (so the onkeyup event will no longer fire).
 ----------------------------------------------------------------------------------------*/
 window.onblur = function(){
   gInputs = []; for(var i = 0; i < 256; i++) gInputs.push(-1);
 }
 /*----------------------------------------------------------------------------------------
- ���� �L�[�����t���[��������Ă��邩 ����
+ ☆★ How many frames the key is pressed ★☆
 
- <keyName>�Ŏw�肵���L�[�����t���[�������ꑱ���Ă��邩��Ԃ��܂��B������ -1 �ɂȂ�A������
- �n�߂�ƍĂ� 0 ����J�E���g����܂��B
+ Returns the number of frames the key specified by <keyName> has been pressed. When released, it becomes -1.
+ Once you start, counting will start again from 0.
 ----------------------------------------------------------------------------------------*/
 function PressedDuration(keyName){
   return gInputs[ToKc(keyName)];
 }
 /*----------------------------------------------------------------------------------------
- ���� �L�[�͓��͊J�n���? ����
+ ☆★ Is the key in input start state? ★☆
 
- <keyName>�Ŏw�肵���L�[��������n�߂������擾���܂��B������n�߂��t���[�������� true ���
- ���܂��B<keyName>�ɕ��̐����w��(�ȗ���)����ƁA�ǂ̃L�[�ɂ��������܂��B
+ Gets whether the key specified by <keyName> is starting to be pressed. Returns true only in the frame where the key is starting to be pressed.
+ If you specify a negative number for <keyName> (default), any key will be detected.
 ----------------------------------------------------------------------------------------*/
 function IsPressed(keyName){
   keyName = InitArg(keyName, -1);
@@ -168,10 +168,10 @@ function IsPressed(keyName){
   return gInputs[ToKc(keyName)] == 1;
 }
 /*----------------------------------------------------------------------------------------
- ���� �L�[��������Ă���? ����
+ ☆★ Key pressed? ★☆
 
- <keyName>�Ŏw�肵���L�[��������Ă��邩���擾���܂��B������Ă��痣���܂ł̊� true ��Ԃ�
- �܂��B<keyName>�ɕ��̐����w��(�ȗ���)����ƁA�ǂ̃L�[�ɂ��������܂��B
+ Gets whether the key specified by <keyName> is pressed. Returns true from when it is pressed until it is released.
+ If you specify a negative number for <keyName> (default), any key will be detected.
 ----------------------------------------------------------------------------------------*/
 function IsHolded(keyName){
   keyName = InitArg(keyName, -1);
@@ -184,11 +184,11 @@ function IsHolded(keyName){
   return gInputs[ToKc(keyName)] > 0;
 }
 /*----------------------------------------------------------------------------------------
- ���� �L�[�͓��͂�^���Ă���? ����
+ ☆★ Is the key giving input? ★☆
 
- <keyName>�Ŏw�肵���L�[�����͂�^���邩���擾���܂��B�L�[�������n�߂����ƃL�[���s�[�g�̍�
- ���ł���΁u���͂�^���Ă���v�ƌ��Ȃ���܂��B<keyName>�ɕ��̐����w��(�ȗ���)����ƁA�ǂ�
- �L�[�ɂ��������܂��B
+ Gets whether the key specified by <keyName> is input.
+ If you specify a negative number for <keyName> (default), any
+ It also responds to keys.
 ----------------------------------------------------------------------------------------*/
 function IsInputting(keyName){
   keyName = InitArg(keyName, -1);
@@ -204,11 +204,11 @@ function IsInputting(keyName){
   return (gInputs[keyCode] - KEY_CHARGE_DURATION - 1) % KEY_REPEAT_SPAN == 0;
 }
 /*----------------------------------------------------------------------------------------
- ���� ��������L�[�R�[�h�ɕϊ����� ( TO KeyCode ) ����
+ ☆★ Convert a string to a key code (TO KeyCode) ★☆
 
- <keyString>�Ŏw�肵���L�[�̃R�[�h��Ԃ��܂��B<keyString>�ɑΉ�����L�[���Ȃ��ꍇ�� 0 ���
- ���܂��B�����̃L�[�R�[�h������L�[(���Ƃ��ΐ����� '0' �̃L�[�R�[�h�� 48 �� 96 (�e���L�[))
- �̏ꍇ�́A��\���� 1 �̃R�[�h��Ԃ��܂��B
+ Returns the code for the key specified in <keyString>. If there is no key corresponding to <keyString>, returns 0.
+ Keys that have multiple key codes (for example, the number '0' has key codes 48 and 96 (numeric keypad))
+ If , it returns a representative code.
 ----------------------------------------------------------------------------------------*/
 function ToKc(keyString){
   switch(keyString){
@@ -294,80 +294,80 @@ function ToKc(keyString){
   case '/':          return 191; break;
   case '@':          return 192; break;
   case '[':          return 219; break;
-  case '\\':         return 220; break;
+  case '¥¥':         return 220; break;
   case ']':          return 221; break;
   case '^':          return 222; break;
   default:           return   0; break;
   }
 }
 /*----------------------------------------------------------------------------------------
- ���� �R���\�[���ɕ\�� ����
+ ☆★ Show on console ★☆
 
- �R���\�[����<value>�̓��e��\�����܂��B<variableName>�ɕϐ����𕶎���Ŏw�肷��ƁA�ϐ���
- ����������邽�߂�茩�₷���Ȃ�܂��B
+ Displays the contents of <value> in the console. If you specify a variable name as a string in <variableName>, the variable name
+ This makes it easier to see because it is clearly indicated.
 
  var a = [1, 2, 3];
  p(a);       // => 1,2,3
  p(a, "a");  // => <a> = 1,2,3
 ----------------------------------------------------------------------------------------*/
 function p(value, variableName){
-  // �R���\�[�����J���Ă��Ȃ��ꍇ�͊J��
+  // If the console is not open, open it.
   if(typeof gConsole === 'undefined') openConsole();
   else if(gConsole.closed) openConsole();
-  // ������̕ϊ�
-  value = "" + value;  // ������
+  // Convert the string
+  value = "" + value; // Text serialization
   value = value.replace(/</g, '&lt;');
   value = value.replace(/>/g, '&gt;');
   if(typeof variableName !== 'undefined'){
-    variableName = "" + variableName;  // ������
+    variableName = "" + variableName; // Text columnization
     variableName = variableName.replace(/</g, '&lt;');
     variableName = variableName.replace(/>/g, '&gt;');
   }
-  // �R���\�[���ɕ\��
+  // Display in console
   if(typeof variableName !== 'undefined'){
     gConsole.document.write('&lt;' + variableName + '&gt; = ');
   }
   gConsole.document.write(value + '<br>');
-  // �ŉ��[�փX�N���[��
+  // Scroll to the bottom
   gConsole.scroll(0, 16777215);
 }
 /*----------------------------------------------------------------------------------------
- ���� �R���\�[���E�B���h�E�̊J�n ����
+ ☆★ Start a console window ★☆
 
- �R���\�[���E�B���h�E���J���܂��Bp ���ŕK�v�ɉ����Ď����I�ɊJ����܂��B
+ Open a console window. This will be opened automatically within p if needed.
 ----------------------------------------------------------------------------------------*/
 function openConsole(){
   var cwOptions = 'width=480, height=160, menubar=no, toolbar=no, scrollbars=yes';
-  var cwStyle = '<span style="font-size:8pt;font-family:�l�r �S�V�b�N,monospace">';
+  var cwStyle = '<span style="font-size:8pt;font-family:MS Gothic,monospace">';
   gConsole = window.open('about:blank', 'console', cwOptions);
   gConsole.document.write(cwStyle);
 }
 /*----------------------------------------------------------------------------------------
- ���� ��`�ς̒l���f�t�H���g�l���擾 ( INITialize ARGument ) ����
+ ☆★ Get the defined or default value ( INITialize ARGument ) ★☆
 
- <variable>�ɒl����`����Ă��Ȃ��ꍇ�̓f�t�H���g�l�Ƃ���<defaultValue>��Ԃ��܂��B
+ If <variable> has no defined value, it returns <defaultValue> as the default value.
 ----------------------------------------------------------------------------------------*/
 function InitArg(variable, defaultValue){
   return (typeof variable === 'undefined') ? defaultValue : variable;
 }
 /*----------------------------------------------------------------------------------------
- ���� �e�L�X�g�̕\�� ����
+ ☆★ Show text ★☆
 
- <textBoxId>�Ŏw�肵�� ID �̃e�L�X�g�{�b�N�X�ɕ���<text>��\�����܂��B
+ Displays the text <text> in the text box with the ID specified by <textBoxId>.
 ----------------------------------------------------------------------------------------*/
 function Say(textBoxId, text){
   document.getElementById(textBoxId).value = text;
 }
 /*----------------------------------------------------------------------------------------
- ���� �\�� ����
+ ☆★ means ★☆
 ----------------------------------------------------------------------------------------*/
 function ShowImage(imageId){
   document.getElementById(imageId).style.display = "inline";
 }
 /*----------------------------------------------------------------------------------------
- ���� �摜�̕\�� ����
+ ☆★ Image display ★☆
 
- <imageId>�Ŏw�肵���摜�̃A�h���X��<src>�ɂ��܂��B�A�h���X���ς��Ȃ���Ή������܂���B
+ The address of the image specified by <imageId> is set to <src>. If the address does not change, nothing will be done.
 ----------------------------------------------------------------------------------------*/
 function SetImage(imageId, src){
   if(document.getElementById(imageId).src != src){
@@ -375,15 +375,15 @@ function SetImage(imageId, src){
   }
 }
 /*----------------------------------------------------------------------------------------
- ���� �o�ߎ��Ԃ̎w�肳�ꂽ�������擾 ( Elapsed HOURs/MINutes/SEConds/MilliSEConds ) ����
+ ☆★ Get the specified part of elapsed time (Elapsed HOURs/MINutes/SEConds/MilliSEConds) ★☆
 
- �N������̌o�ߎ��Ԃ̂����A����/��/�b/�~���b �̕����̒l��Ԃ��܂��B�o�ߎ��Ԃ͌o�߃t���[����
- ����v�Z�����l�ł��̂ŁA���ۂ̎��Ԃɑ΂��đ����̌덷������܂��B
+ Returns the time elapsed since launch in hours/minutes/seconds/milliseconds. The elapsed time is expressed as the number of frames elapsed.
+ This is a calculated value, so there may be some error from the actual time.
 
- �� �N������ 1 ���� 23 �� 45.678 �b���o�߂����ꍇ
+ ◎ When 1 hour, 23 minutes, and 45.678 seconds have passed since startup
  p(EHour());  // => 1
- p(EMin());   // => 23
- p(ESec());   // => 45
+ p(EMin()); // => 23
+ p(ESec()); // => 45
  p(EMSec());  // => 678
 ----------------------------------------------------------------------------------------*/
 function EHour(){return Math.floor(gFrames / FPS / 3600); }
@@ -391,41 +391,41 @@ function EMin() {return Math.floor(gFrames / FPS / 60) % 60; }
 function ESec() {return Math.floor(gFrames / FPS) % 60; }
 function EMSec(){return Math.floor(gFrames / FPS * 1000) % 1000; }
 /*----------------------------------------------------------------------------------------
- ���� �o�ߎ��Ԃ�b���Ŏ擾 ( Elapsed TIME ) ����
+ ☆★ Get the elapsed time in seconds (Elapsed TIME) ★☆
 
- �N������̌o�ߎ��Ԃ�b�P�ʂŕԂ��܂��B�����_�������Ԃ���܂��BEHour() ���Ɠ��l�ɁA���ۂ�
- ���Ԃɑ΂��đ����̌덷������܂��B
+ Returns the elapsed time in seconds since startup. The fractional part is also returned. Like EHour(), it returns the actual time.
+ There may be some discrepancies in the time.
 ----------------------------------------------------------------------------------------*/
 function ETime(){
   return gFrames / FPS;
 }
 /*----------------------------------------------------------------------------------------
- ���� �o�ߎ��Ԃ𕶎���ɕϊ����Ď擾 ( Elapsed Time STRing ) ����
+ ☆★ Convert elapsed time into a string (Elapsed Time STRing) ★☆
 
- �N������̌o�ߎ��Ԃ���ʓI�Ȏ��ԕ\���ŕԂ��܂��BEHour() ���Ɠ��l�ɁA���ۂ̎��Ԃɑ΂��đ�
- ���̌덷������܂��B
+ Returns the elapsed time since startup in a common time representation. It is similar to EHour() and can be used to express many different times relative to the actual time.
+ There may be a small error.
 
- �� �N������ 1 ���� 23 �� 45 �b���o�߂����ꍇ
+ ◎ 1 hour, 23 minutes, and 45 seconds have passed since startup
  p(EtStr());  // => '01:23:45'
 ------------------------------------------------------------------------------------------
- <hLength>(�ȗ��� 2 )�Ŏ��Ԃ̌������w�肵�܂��B���̌����ɑ���Ȃ���΁A�󂢂������� 0 ��
- ���߂܂��B������葽���ꍇ�́A���Ԃ̕����͂��̂܂܂ɂ��܂��B
+ <hLength> (default 2) specifies the number of digits for the time. If the number of digits is insufficient, the remaining digits are filled with 0.
+ If there are more digits, leave the time part as is.
 
- �� �N������ 10 ���Ԃ��o�߂����ꍇ
+ ◎ 10 hours have passed since startup
  p(EtStr(4));  // => '0010:00:00'
  p(EtStr(3));  // => '010:00:00'
  p(EtStr(2));  // => '10:00:00'
  p(EtStr(1));  // => '10:00:00'
 ------------------------------------------------------------------------------------------
- <hDelim>(�ȗ��� ':' ), <mDelim>(�ȗ��� ':' ), <sDelim>(�ȗ��� '' )�͂��ꂼ�ꎞ�ԁA���A�b
- �̋�؂�L��( Hour/Minute/Second DELIMiter )�ł��B
+ <hDelim>(default ':' ), <mDelim>(default ':' ), <sDelim>(default '' ) are hours, minutes, and seconds, respectively.
+ The delimiter ( Hour/Minute/Second DELIMiter ).
 
- �� �N������ 1 ���� 23 �� 45 �b���o�߂����ꍇ
- p(EtStr(1, '����', '��', '�b'));  // => '1����23��45�b'
+ ◎ 1 hour, 23 minutes, and 45 seconds have passed since startup
+ p(EtStr(1, '時間', '分', '秒'));  // => '1時間23分45秒'
 ------------------------------------------------------------------------------------------
- <msLength>(�ȗ��� 0 )�ŕb�������_���ʂ܂ŕ�����ɂ��邩���w��ł��܂��B
+ <msLength> (default 0) allows you to specify how many decimal places to include in the seconds string.
 
- �� �N������ 1 ���� 23 �� 45.666 �b���o�߂����ꍇ
+ ◎ When 1 hour, 23 minutes, and 45.666 seconds have passed since startup
  p(EtStr(undefined, undefined, undefined, undefined, 0));  // => '01:23:45'
  p(EtStr(undefined, undefined, undefined, '.', 1));        // => '01:23:45.6'
  p(EtStr(undefined, undefined, undefined, '.', 2));        // => '01:23:45.66'
@@ -449,18 +449,18 @@ function EtStr(hLength, hDelim, mDelim, sDelim, msLength){
   return result;
 }
 /*----------------------------------------------------------------------------------------
- ���� �����_�̎w��ʂŎl�̌ܓ�/�؂�̂�/�؂�グ ����
+ ☆★ Round up/down/up to the specified decimal point ★☆
 
- ���l<n>���l�̌ܓ�/�؂�̂�/�؂�グ���܂��B
+ Rounds the number <n> up/down.
 ------------------------------------------------------------------------------------------
- <place>�� 0 (�ȗ���)�Ȃ琮���ɂȂ�悤�ɁA���̐��Ȃ珬���_�ȉ���<place>���ɂȂ�悤�ɏ���
- ���܂��B���̐����w�肷��� -<place>���ڂ̐����������������܂��B
+ If <place> is 0 (default), the number is processed to be an integer, and if it is a positive number, the number of decimal points is processed to be <place>.
+ If a negative number is specified, the integer part of the -<place>th digit is processed.
 
  p(Round(1234.5678))      // => 1235
  p(Round(1234.5678, 2))   // => 1234.57
  p(Round(1234.5678, -2))  // => 1200
 ------------------------------------------------------------------------------------------
- �ۂߌ덷�� Justify �ɂ���Ď����C������܂��B
+ Rounding errors are automatically corrected by Justify.
 ----------------------------------------------------------------------------------------*/
 function Round(n, place){
   place = InitArg(place, 0);
@@ -477,115 +477,115 @@ function Ceil(n, place){
   return Justify(Math.ceil(n * Math.pow(10, place)) / Math.pow(10, place));
 }
 /*----------------------------------------------------------------------------------------
- ���� �ۂߌ덷�̏C�� ����
+ ☆★ Rounding error correction ★☆
 
- <n>�̊ۂߌ덷���C�����ĕԂ��܂��B�ۂߌ덷�Ƃ́A�R���s���[�^���������v�Z����Ɛ����������
- �덷�̂��Ƃł��B
+ Returns <n> corrected for rounding errors. Rounding errors are tiny errors that occur when a computer calculates decimal numbers.
+ It means an error.
 
  p(0.01 + 0.05);           // => 0.060000000000000005
  p(Justify(0.01 + 0.05));  // => 0.06
 ------------------------------------------------------------------------------------------
- ��̓I�ɂ́A�L�������� 15 ���ɂȂ�悤�Ɏl�̌ܓ����Ă��܂��B���Ƃ��ƗL�������� 16 ���ȏ�
- �̏ꍇ�A�Ӑ}���Ȃ��l�̕ω����N����\��������܂��B
+ Specifically, the number is rounded off to 15 significant digits. If the number is originally 16 or more significant digits,
+ In this case, unintended value changes may occur.
 ----------------------------------------------------------------------------------------*/
 function Justify(n){
-  // ���傤�� 0 �Ȃ炻�̂܂ܕԂ�( log(0) ����`����Ă��Ȃ�����)
+  // If it is exactly 0, just return it (because log(0) is not defined)
   if(n == 0) return 0;
-  // ���̐��ɕϊ�
+  // Convert to a positive number
   var pn = Math.abs(n);
-  // 15 ���̐����ɕ␳
+  // Correct to a 15-digit integer
   var cl = Math.floor(Math.log(pn) / Math.LN10);  // Common Logarithm
   pn = Math.round(pn * Math.pow(10, 14 - cl));
-  // ������
+  // Stringify
   var result = "" + pn;
   var zeros = "";
-  // �K�؂Ȉʒu�ɏ����_��t��
+  // Add a decimal point in the appropriate place
   if(0 <= cl && cl <= 14){
     result = result.slice(0, cl + 1) + "." + result.slice(cl + 1);
   }else if(cl < 0){
-    // �擪�Ɂu0.000�c�v��t��
+    // Add "0.000..." to the beginning
     for(var i = 0; i < Math.abs(cl) - 1; i++) zeros += "0";
     result = "0." + zeros + result;
   }else{
-    // �Ō���Ɂu000�c�v��t��
+    // Add "000..." to the end
     for(var i = 15; i < cl; i++) zeros += "0";
     result = result + zeros;
   }
-  // �Ăѐ��l�ɖ߂��ĕԂ�
+  // Convert it back to a number and return it
   return parseFloat(result) * (n > 0 ? 1 : -1);
 }
 /*----------------------------------------------------------------------------------------
- ���� ����( RANDom number )�̐��� ����
+ ☆★ Random number generation ★☆
 
- 0 �ȏ�<n>�����̗����𐮐��ŕԂ��܂��B<n>�� 0 (�ȗ���)���w�肳�ꂽ�ꍇ�́A0 �ȏ� 1 ������
- �����������ŕԂ��܂��B
+ Returns a random integer number between 0 and <n>. If <n> is set to 0 (default), a number between 0 and 1 is returned.
+ Returns a random number as a real number.
 ------------------------------------------------------------------------------------------
- <times>�� 1 �ȏ�̐������w�肵���ꍇ�́A�d���̂Ȃ��悤��<times>�̗����z����쐬���ĕԂ�
- �܂��B<times>��<n>���傫���ꍇ�́A�d�����Ȃ������z�񂪌J��Ԃ���������܂��B
+ If <times> is an integer greater than or equal to 1, a random array of <times> numbers is created and returned without duplicates.
+ If <times> is greater than <n>, a unique random array is generated repeatedly.
 
- p(Rand(5, 2))   // => 4,2
- p(Rand(5, 5))   // => 2,0,3,1,4
- p(Rand(5, 15))  // => 1,2,0,3,4,2,1,0,4,3,0,1,4,3,2
+ p(Rand(5, 2)) // => 4.2
+ p(Rand(5, 5)) // => 2,0,3,1,4
+ p(Rand(5, 15)) // => 1,2,0,3,4,2,1,0,4,3,0,1,4,3,2
 
- �� ���ʂ͌Ăяo����邲�Ƃɕς��܂��B
+ The results will change each time it is called.
 ----------------------------------------------------------------------------------------*/
 function Rand(n, times){
   n = InitArg(n, 0);
   times = InitArg(times, 0);
 
   if(times <= 0){
-    // �l�ŕԂ�
+    // Return by value
     if(n <= 0) return Math.random();
     return Math.floor(Math.random() * n);
   }else{
-    // �z��ŕԂ�
+    // Return it as an array
     var result = [];
     var sequence;
     var choice;
     while(true){
       sequence = [];
-      // �A�Ԕz����쐬����
+      // Create a sequence of numbers
       for(var i = 0; i < n; i++) sequence.push(i);
-      // �A�Ԕz�񂩂烉���_���Ŕ����o���Ă���
+      // Randomly extract from the sequence
       for(var i = 0; i < n; i++){
         choice = Math.floor(Math.random() * sequence.length);
         result.push(sequence[choice]);
-        // �K�v���ɂȂ�����I��
+        // End when the required number is reached
         if(result.length == times) return result;
-        // �����o�����v�f���폜
+        // Delete the extracted elements
         sequence = sequence.slice(0, choice).concat(sequence.slice(choice + 1));
       }
     }
   }
 }
 /*----------------------------------------------------------------------------------------
- ���� �N�b�L�[�փZ�[�u ����
+ ☆★ Save to cookie ★☆
 
- �N�b�L�[( Cookie )�ɏ����������݂܂��B<name>�ɖ��O�A<value>�ɒl�A<expireDays>�ɗL������
- �܂ł̓���(�ȗ��� 7305 (�� 20 �N��))�����ꂼ��w�肵�܂��B�������ރf�[�^��
- �u���O=�l; expires=�L������;�v�̂悤�ȏ����ɂȂ�܂��B
+ Writes information to a cookie. <name> is the name, <value> is the value, and <expireDays> is the expiration date.
+ Specify the number of days until the end of the period (default is 7305 (about 20 years)).
+ The format is "name=value; expires=expiration date;".
 ------------------------------------------------------------------------------------------
- �u���E�U�ŃN�b�L�[�̊�����g�p�֎~���w�肳��Ă���ꍇ�́A�����炪�D�悳���Ǝv���܂��B
+ If your browser specifies a cookie expiration date or prohibits the use of cookies, this will take precedence.
 ----------------------------------------------------------------------------------------*/
 function Save(name, value, expireDays){
   expireDays = InitArg(expireDays, 7305);
 
-  // �ۑ��p������̍쐬
+  // Create a string to save
   var s = encodeURIComponent(name) + "="
   s += encodeURIComponent(value) + "; expires=";
-  // �L�������̐ݒ�
+  // Set expiration date
   var xpDate = new Date().getTime();  // eXPire DATE
   xpDate -= 60000 * new Date().getTimezoneOffset();
   xpDate += expireDays * 86400000;
   s += new Date(xpDate).toUTCString();
-  // �ۑ�
+  // keep
   document.cookie = s;
 }
 /*----------------------------------------------------------------------------------------
- ���� �N�b�L�[���烍�[�h ����
+ ☆★ Load from Cookies ★☆
 
- �N�b�L�[��ǂݍ���ŁA���O<name>�ɑΉ�����l��Ԃ��܂��B�w�肵�����O�����݂��Ȃ��ꍇ��
- <defaultValue>���Ԃ�܂��B
+ Reads a cookie and returns the value corresponding to the name <name>, or if the name does not exist.
+ <defaultValue> is returned.
 ----------------------------------------------------------------------------------------*/
 function Load(name, defaultValue){
   var cookieStr = document.cookie;  // COOKIE STRing
@@ -593,108 +593,108 @@ function Load(name, defaultValue){
   if(namePos == -1) return defaultValue;
 
   var si = namePos + name.length + 1;   // Start Index
-  var ei = cookieStr.indexOf(';', si);  // End Index
+  var ei = cookieStr.indexOf(';', si); // End Index
   ei = (ei == -1) ? cookieStr.length : ei;
   return decodeURIComponent(cookieStr.substring(si, ei));
 }
 /*----------------------------------------------------------------------------------------
- ���� ���C�����[�v ����
+ ☆★ Main Loop ★☆
 
- 1 �t���[���ɑ������鎞��( 1 / <FPS> �b)���o�߂�����A�t���[�����������s���܂��B�������Ɗ�
- �荞��(�L�[���͓�)�ȊO�͌����Ƃ��Ă��̃��[�v���ŏ�������܂��B
+ After the time equivalent to one frame (1 / <FPS> seconds) has elapsed, the intra-frame processing is performed.
+ In principle, all operations other than input (key input, etc.) are processed within this loop.
 ----------------------------------------------------------------------------------------*/
 function MainLoop(){
-  // �t���[���o�ߔ���
-  // setInterval �͐��x���Ⴂ�̂ŁA�t���[���o�ߔ����ʓr�s���Ď��ԊǗ������Ă��܂��B
+  // Frame progress check
+  // Since setInterval has low accuracy, we manage the time by separately determining whether frames have passed.
   if(new Date() - gStartTime < 1000 / FPS * gFrames) return;
   gFrames++;
-  // ������Ă���L�[�̊Ǘ�
+  // Manage pressed keys
   for(var i = 0; i < 256; i++) if(gInputs[i] >= 0) gInputs[i]++;
-  // �t���[���������B�Ăяo�����Œ�`���Ă�������
+  // In-frame processing, must be defined by the caller
   Main();
 }
 /*----------------------------------------------------------------------------------------
- ���� �I�������� ����
+ ☆★ Processing at the end ★☆
 
- �ʂ̃y�[�W�Ɉڂ�Ƃ���A����Ƃ��Ɏ����I�Ɏ��s����鏈���ł��B
+ This is an action that is automatically executed when you move to another page or close the page.
 ----------------------------------------------------------------------------------------*/
 window.onbeforeunload = function(){
-  // �R���\�[�����J���Ă���Ε���
+  // If the console is open, close it.
   if(typeof gConsole !== 'undefined') if(!gConsole.closed) gConsole.close();
 }
 /*----------------------------------------------------------------------------------------
- ���� �N�� ����
+ ☆★ Start ★☆
 
- �ŏ��ɌĂяo����܂��B�������ƃ��C�����[�v�̋N�����s���܂��B
+ Called first. Initializes and starts the main loop.
 ----------------------------------------------------------------------------------------*/
 function Execute(){
-  // ���W���[�����̏���������
+  // Initialization process in the module
   gStartTime = new Date();
   gFrames = 0;
   gInputs = []; for(var i = 0; i < 256; i++) gInputs.push(-1);
-  // �����������B�Ăяo�����Œ�`���Ă�������
+  // Initialization process. Please define it on the caller side.
   Setup();
-  // �^�C�}�[�N��
+  // Start the timer
   gTimer = setInterval('MainLoop()', LOOP_INTERVAL)
 }
 /*----------------------------------------------------------------------------------------
- ���� �I�u�W�F�N�g: ���C���[ ����
+ ☆★ Object: Layer ★☆
 
- div �^�O���Ŏw�肵���u���b�N�����C���[�Ƃ��Ĉ����܂��B���������A<id>�ɂ̓u���b�N�� id
- ���w�肵�Ă�������(<div id="my_layer"> �� my_layer �̕���)�B
+ The block specified by the div tag etc. is treated as a layer. When initialized, <id> is the block id
+ Please specify (the my_layer part of <div id="my_layer">).
 ----------------------------------------------------------------------------------------*/
 function Layer(id){
   this.layer = document.getElementById(id);
   /*
-  �����Ő�΍��W�w��ɂ��Ă��܂����A�ł������O�����ăX�^�C���V�[�g�Ő�΍��W�w��ɂ��Ă�
-  �������B��: <div id="my_layer" style="position: absolute;"></div>
+  Although absolute coordinates are specified here, it is recommended to specify absolute coordinates in advance using a style sheet if possible.
+  For example: <div id="my_layer" style="position: absolute;"></div>
   */
   this.layer.style.position = "absolute";
 }
 /*----------------------------------------------------------------------------------------
- ���� �\�� ����
+ ☆★ means ★☆
 ----------------------------------------------------------------------------------------*/
 Layer.prototype.Show = function(){
   this.layer.style.visibility = "visible";
 };
 /*----------------------------------------------------------------------------------------
- ���� �B�� ����
+ ☆★ Hide ★☆
 ----------------------------------------------------------------------------------------*/
 Layer.prototype.Hide = function(){
   this.layer.style.visibility = "hidden";
 };
 /*----------------------------------------------------------------------------------------
- ���� �w��ʒu�Ɉړ� ����
+ ☆★ Move to specified position ★☆
 ----------------------------------------------------------------------------------------*/
 Layer.prototype.MoveTo = function(x, y){
   this.layer.style.left = x;
   this.layer.style.top = y;
 };
 /*----------------------------------------------------------------------------------------
- ���� �w��ʂ����ړ� ����
+ ☆★ Move by specified amount ★☆
 ----------------------------------------------------------------------------------------*/
 Layer.prototype.MoveBy = function(dX, dY){
   this.layer.style.left = parseFloat(this.layer.style.left) + dX;
   this.layer.style.top = parseFloat(this.layer.style.top) + dY;
 };
 /*----------------------------------------------------------------------------------------
- ���� �T�C�Y�ύX ����
+ ☆★ Size change ★☆
 ----------------------------------------------------------------------------------------*/
 Layer.prototype.ResizeTo = function(width, height){
   this.layer.style.width = width;
   this.layer.style.height = height;
 };
 /*----------------------------------------------------------------------------------------
- ���� ���Βl���w�肵�ăT�C�Y�ύX ����
+ ☆★ Change size by specifying relative value ★☆
 ----------------------------------------------------------------------------------------*/
 Layer.prototype.ResizeBy = function(dWidth, dHeight){
   this.layer.style.width = parseFloat(this.layer.style.width) + dWidth;
   this.layer.style.height = parseFloat(this.layer.style.height) + dHeight;
 };
 /*----------------------------------------------------------------------------------------
- ���� �e�L�X�g( HTML �\�[�X)�̋L�� ����
+ ☆★ Enter text (HTML source) ★☆
 
- ���C���[��<text>���L�����܂��B<overwrites>=true �Ȃ�Ώ㏑���Afalse �Ȃ�Βǉ����܂��B
+ Writes <text> to a layer. <overwrites>=true will overwrite, false will append.
 ----------------------------------------------------------------------------------------*/
 Layer.prototype.Write = function(text, overwrites){
   overwrites = InitArg(overwrites, true);

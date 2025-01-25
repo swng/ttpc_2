@@ -2,17 +2,17 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <title>TETRIS Perfect Clear Challenge</title>
-  <!-- �O�� css �Ǎ� -->
+  <!-- External css loading -->
   <link href="ttt.css" rel="stylesheet" type="text/css">
-  <!-- �ڍד���ɂ��Ă͊e js �t�@�C�������Q�Ƃ������� -->
+  <!-- Please refer to each JS file for details. -->
   <script type="text/javascript" src="jsgmod.js"></script>
   <script type="text/javascript" src="data.js"></script>
   <script type="text/javascript" src="problemData.js"></script>
   <script type="text/javascript" src="problem.js"></script>
   <script type="text/javascript" src="ttt.js"></script>
   <!--
-  ������
-  ・(���ɂȂ�)
+  ■Memo
+  ・(Nothing in particular)
 -->
 </head>
 <body onLoad="Execute()">
@@ -30,7 +30,7 @@
         you can study all 711 bags that can be used for the Perfect Clear Opener.<br>
       </p>
       <p>
-        <b>If you cannot find a solution, press "R" and a guide will appear.</b><br>
+        <b>If you cannot find a solution, press "<b id=key_guide_info>R</b>" and a guide will appear.</b><br>
         Please reference <a href="TetrisPerfectClear.xlsx">this</a> for the patterns presented and their PC success rates.
       </p>
 
@@ -43,7 +43,7 @@
         ・Please Restart If I Minos Move Choppy.<br>
       </p>
       <!
-      --�Z�N�V������ҏW�����ꍇ�� data.js �� SectionTitle �ɂ����f���Ă�������-->
+      --If you edit the section, please reflect it in data.js's sectional.-->
       <p>
         Introduction<br>
         <input type="button" value="1  Let's Learn the PC Opener [With Guide]" onClick="gButton='section1'">
@@ -163,8 +163,8 @@
         <input type="button" id="prob1" value="" onClick="gButton='problem2'"><br>
       </p>
       <p>
-        <input type="button" value="��BACK" onClick="gButton='previous'">�@
-        <input type="button" value="NEXT��" onClick="gButton='next'">
+        <input type="button" value="←BACK" onClick="gButton='previous'">
+        <input type="button" value="NEXT→" onClick="gButton='next'">
       </p>
       <p>
         <input type="button" value="Return to Main Screen" onClick="gButton='back'">

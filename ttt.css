@@ -1,21 +1,21 @@
-/* 基本設定 */
+/* Basic settings */
 body, input, select{
-  font-family: "メイリオ", "ＭＳ ゴシック", monospace;
+  font-family: "Meiryo", "MS Gothic", monospace;
   font-size: 16px;
 }
 
 #list_sections input{
-  font-family: "メイリオ", "ＭＳ ゴシック", monospace;
+  font-family: "Meiryo", "MS Gothic", monospace;
   font-size: 12px;
   height: 24px;
 }
 
 textarea{
-  font-family: "メイリオ", "ＭＳ ゴシック", monospace;
+  font-family: "Meiryo", "MS Gothic", monospace;
   font-size: 14px;
 }
 
-/* レイヤー */
+/* Layer */
 .layer{
   visibility: hidden;
   position: absolute;
@@ -24,11 +24,11 @@ textarea{
   border: 1px #cccccc solid;
   padding: 8px 12px;
 }
-/* 中央揃え */
+/* Centered */
 .center{
   text-align: center;
 }
-/* 小さい文字 */
+/* Small letters */
 .small{
   font-size: 12px;
 }
@@ -36,7 +36,7 @@ textarea{
 #title{
   font-size: 24px;
   font-weight: bold;
-  font-family: "メイリオ", "ＭＳ ゴシック", monospace;
+  font-family: "Meiryo", "MS Gothic", monospace;
 }
 #list_sections{
   background-color: #eef4ff;
